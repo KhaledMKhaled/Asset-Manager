@@ -97,21 +97,21 @@ async function seed() {
 
   // Sample companies — columns: companyName, businessType, industry, city, country, companySize, website
   const companies = await db.insert(companiesTable).values([
-    { companyName: "Takamol Technologies", businessType: "B2B", industry: "Technology", city: "Riyadh", country: "Saudi Arabia", companySize: "50-200", website: "https://takamol.sa" },
-    { companyName: "Gulf Retail Group", businessType: "B2C", industry: "Retail", city: "Jeddah", country: "Saudi Arabia", companySize: "200-500" },
-    { companyName: "Bayan Consulting", businessType: "B2B", industry: "Consulting", city: "Riyadh", country: "Saudi Arabia", companySize: "10-50" },
-    { companyName: "Noor Health Solutions", businessType: "B2B", industry: "Healthcare", city: "Dammam", country: "Saudi Arabia", companySize: "50-200" },
-    { companyName: "Future Logistics Co.", businessType: "B2B", industry: "Logistics", city: "Riyadh", country: "Saudi Arabia", companySize: "200-500" },
+    { companyName: "Takamol Technologies", businessType: "B2B", city: "Riyadh", country: "Saudi Arabia", companySize: "50-200", website: "https://takamol.sa" },
+    { companyName: "Gulf Retail Group", businessType: "B2C", city: "Jeddah", country: "Saudi Arabia", companySize: "200-500" },
+    { companyName: "Bayan Consulting", businessType: "B2B", city: "Riyadh", country: "Saudi Arabia", companySize: "10-50" },
+    { companyName: "Noor Health Solutions", businessType: "B2B", city: "Dammam", country: "Saudi Arabia", companySize: "50-200" },
+    { companyName: "Future Logistics Co.", businessType: "B2B", city: "Riyadh", country: "Saudi Arabia", companySize: "200-500" },
   ]).returning();
   console.log("Companies seeded:", companies.length);
 
   // Sample contacts
   const contacts = await db.insert(contactsTable).values([
-    { fullName: "Mohammed Al-Zahrani", jobTitle: "CEO", email: "m.zahrani@takamol.sa", phone: "+966501234567", companyId: companies[0].id, leadSource: "meta_ads" },
-    { fullName: "Fatima Hassan", jobTitle: "CMO", email: "f.hassan@gulfretail.com", phone: "+966512345678", companyId: companies[1].id, leadSource: "google_ads" },
-    { fullName: "Khalid Al-Otaibi", jobTitle: "Director", email: "k.otaibi@bayan.com", phone: "+966523456789", companyId: companies[2].id, leadSource: "referral" },
-    { fullName: "Sara Al-Malik", jobTitle: "CTO", email: "s.malik@noor.com", phone: "+966534567890", companyId: companies[3].id, leadSource: "website" },
-    { fullName: "Omar Al-Qurashi", jobTitle: "COO", email: "o.qurashi@future.com", phone: "+966545678901", companyId: companies[4].id, leadSource: "cold_call" },
+    { fullName: "Mohammed Al-Zahrani", jobTitle: "CEO", email: "m.zahrani@takamol.sa", phone: "+966501234567", companyId: companies[0].id },
+    { fullName: "Fatima Hassan", jobTitle: "CMO", email: "f.hassan@gulfretail.com", phone: "+966512345678", companyId: companies[1].id },
+    { fullName: "Khalid Al-Otaibi", jobTitle: "Director", email: "k.otaibi@bayan.com", phone: "+966523456789", companyId: companies[2].id },
+    { fullName: "Sara Al-Malik", jobTitle: "CTO", email: "s.malik@noor.com", phone: "+966534567890", companyId: companies[3].id },
+    { fullName: "Omar Al-Qurashi", jobTitle: "COO", email: "o.qurashi@future.com", phone: "+966545678901", companyId: companies[4].id },
   ]).returning();
   console.log("Contacts seeded:", contacts.length);
 
@@ -197,10 +197,10 @@ async function seed() {
   // Sample tasks
   if (adminId && leads.length > 0) {
     await db.insert(tasksTable).values([
-      { title: "Follow up with Mohammed Al-Zahrani", leadId: leads[0]?.id, assignedTo: adminId, priority: "high", status: "open", dueDate: new Date(Date.now() + 86400000) },
-      { title: "Send proposal to Bayan Consulting", leadId: leads[2]?.id, assignedTo: adminId, priority: "urgent", status: "open", dueDate: new Date(Date.now() - 86400000) },
-      { title: "Schedule demo call with Future Logistics", leadId: leads[4]?.id, assignedTo: salesRepId ?? adminId, priority: "medium", status: "open", dueDate: new Date(Date.now() + 3 * 86400000) },
-      { title: "Update lead qualification notes for Gulf Retail", leadId: leads[1]?.id, assignedTo: salesRepId ?? adminId, priority: "low", status: "open" },
+      { title: "Follow up with Mohammed Al-Zahrani", entityType: "lead", entityId: leads[0]?.id, assignedTo: adminId, priority: "high", status: "open", dueDate: new Date(Date.now() + 86400000) },
+      { title: "Send proposal to Bayan Consulting", entityType: "lead", entityId: leads[2]?.id, assignedTo: adminId, priority: "urgent", status: "open", dueDate: new Date(Date.now() - 86400000) },
+      { title: "Schedule demo call with Future Logistics", entityType: "lead", entityId: leads[4]?.id, assignedTo: salesRepId ?? adminId, priority: "medium", status: "open", dueDate: new Date(Date.now() + 3 * 86400000) },
+      { title: "Update lead qualification notes for Gulf Retail", entityType: "lead", entityId: leads[1]?.id, assignedTo: salesRepId ?? adminId, priority: "low", status: "open" },
       { title: "Review Q1 campaign performance", assignedTo: adminId, priority: "medium", status: "completed" },
     ]).onConflictDoNothing();
     console.log("Tasks seeded");

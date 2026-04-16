@@ -29,7 +29,7 @@ router.post("/kpi-definitions", requireAuth, async (req, res): Promise<void> => 
 
 router.patch("/kpi-definitions/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [item] = await db.update(kpiDefinitionsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(kpiDefinitionsTable.id, req.params.id)).returning();
+    const [item] = await db.update(kpiDefinitionsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(kpiDefinitionsTable.id, (req.params.id as string))).returning();
     if (!item) { res.status(404).json({ error: "Not found" }); return; }
     res.json(item);
   } catch (err) {
@@ -40,7 +40,7 @@ router.patch("/kpi-definitions/:id", requireAuth, async (req, res): Promise<void
 
 router.delete("/kpi-definitions/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    await db.delete(kpiDefinitionsTable).where(eq(kpiDefinitionsTable.id, req.params.id));
+    await db.delete(kpiDefinitionsTable).where(eq(kpiDefinitionsTable.id, (req.params.id as string)));
     res.status(204).end();
   } catch (err) {
     req.log.error(err);

@@ -32,7 +32,7 @@ router.post("/campaigns", requireAuth, async (req, res): Promise<void> => {
 
 router.get("/campaigns/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [item] = await db.select().from(campaignsTable).where(eq(campaignsTable.id, req.params.id)).limit(1);
+    const [item] = await db.select().from(campaignsTable).where(eq(campaignsTable.id, (req.params.id as string))).limit(1);
     if (!item) { res.status(404).json({ error: "Not found" }); return; }
     res.json(item);
   } catch (err) {
@@ -43,7 +43,7 @@ router.get("/campaigns/:id", requireAuth, async (req, res): Promise<void> => {
 
 router.patch("/campaigns/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [item] = await db.update(campaignsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(campaignsTable.id, req.params.id)).returning();
+    const [item] = await db.update(campaignsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(campaignsTable.id, (req.params.id as string))).returning();
     if (!item) { res.status(404).json({ error: "Not found" }); return; }
     res.json(item);
   } catch (err) {
@@ -54,7 +54,7 @@ router.patch("/campaigns/:id", requireAuth, async (req, res): Promise<void> => {
 
 router.delete("/campaigns/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    await db.delete(campaignsTable).where(eq(campaignsTable.id, req.params.id));
+    await db.delete(campaignsTable).where(eq(campaignsTable.id, (req.params.id as string)));
     res.status(204).end();
   } catch (err) {
     req.log.error(err);

@@ -29,9 +29,9 @@ router.post("/scoring-models", requireAuth, async (req, res): Promise<void> => {
 
 router.get("/scoring-models/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [model] = await db.select().from(scoringModelsTable).where(eq(scoringModelsTable.id, req.params.id)).limit(1);
+    const [model] = await db.select().from(scoringModelsTable).where(eq(scoringModelsTable.id, (req.params.id as string))).limit(1);
     if (!model) { res.status(404).json({ error: "Not found" }); return; }
-    const rules = await db.select().from(scoringRulesTable).where(eq(scoringRulesTable.modelId, req.params.id)).orderBy(scoringRulesTable.position);
+    const rules = await db.select().from(scoringRulesTable).where(eq(scoringRulesTable.modelId, (req.params.id as string))).orderBy(scoringRulesTable.position);
     res.json({ ...model, rules });
   } catch (err) {
     req.log.error(err);
@@ -41,7 +41,7 @@ router.get("/scoring-models/:id", requireAuth, async (req, res): Promise<void> =
 
 router.patch("/scoring-models/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [item] = await db.update(scoringModelsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(scoringModelsTable.id, req.params.id)).returning();
+    const [item] = await db.update(scoringModelsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(scoringModelsTable.id, (req.params.id as string))).returning();
     if (!item) { res.status(404).json({ error: "Not found" }); return; }
     res.json(item);
   } catch (err) {
@@ -52,7 +52,7 @@ router.patch("/scoring-models/:id", requireAuth, async (req, res): Promise<void>
 
 router.delete("/scoring-models/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    await db.delete(scoringModelsTable).where(eq(scoringModelsTable.id, req.params.id));
+    await db.delete(scoringModelsTable).where(eq(scoringModelsTable.id, (req.params.id as string)));
     res.status(204).end();
   } catch (err) {
     req.log.error(err);
@@ -63,7 +63,7 @@ router.delete("/scoring-models/:id", requireAuth, async (req, res): Promise<void
 router.post("/scoring-models/:id/rules", requireAuth, async (req, res): Promise<void> => {
   try {
     if (!req.body.category || !req.body.ruleName) { res.status(400).json({ error: "category, ruleName required" }); return; }
-    const [item] = await db.insert(scoringRulesTable).values({ ...req.body, modelId: req.params.id, scoreValue: req.body.scoreValue ?? "0" }).returning();
+    const [item] = await db.insert(scoringRulesTable).values({ ...req.body, modelId: (req.params.id as string), scoreValue: req.body.scoreValue ?? "0" }).returning();
     res.status(201).json(item);
   } catch (err) {
     req.log.error(err);
@@ -73,7 +73,7 @@ router.post("/scoring-models/:id/rules", requireAuth, async (req, res): Promise<
 
 router.patch("/scoring-rules/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [item] = await db.update(scoringRulesTable).set({ ...req.body, updatedAt: new Date() }).where(eq(scoringRulesTable.id, req.params.id)).returning();
+    const [item] = await db.update(scoringRulesTable).set({ ...req.body, updatedAt: new Date() }).where(eq(scoringRulesTable.id, (req.params.id as string))).returning();
     if (!item) { res.status(404).json({ error: "Not found" }); return; }
     res.json(item);
   } catch (err) {
@@ -84,7 +84,7 @@ router.patch("/scoring-rules/:id", requireAuth, async (req, res): Promise<void> 
 
 router.delete("/scoring-rules/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    await db.delete(scoringRulesTable).where(eq(scoringRulesTable.id, req.params.id));
+    await db.delete(scoringRulesTable).where(eq(scoringRulesTable.id, (req.params.id as string)));
     res.status(204).end();
   } catch (err) {
     req.log.error(err);

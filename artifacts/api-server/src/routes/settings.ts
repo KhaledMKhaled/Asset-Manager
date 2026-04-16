@@ -19,12 +19,12 @@ router.get("/settings", requireAuth, async (req, res): Promise<void> => {
 router.put("/settings/:key", requireAuth, async (req, res): Promise<void> => {
   try {
     const { value } = req.body;
-    const existing = await db.select().from(settingsTable).where(eq(settingsTable.key, req.params.key)).limit(1);
+    const existing = await db.select().from(settingsTable).where(eq(settingsTable.key, (req.params.key as string))).limit(1);
     if (existing.length) {
-      const [item] = await db.update(settingsTable).set({ value, updatedAt: new Date() }).where(eq(settingsTable.key, req.params.key)).returning();
+      const [item] = await db.update(settingsTable).set({ value, updatedAt: new Date() }).where(eq(settingsTable.key, (req.params.key as string))).returning();
       res.json(item);
     } else {
-      const [item] = await db.insert(settingsTable).values({ key: req.params.key, value }).returning();
+      const [item] = await db.insert(settingsTable).values({ key: (req.params.key as string), value }).returning();
       res.json(item);
     }
   } catch (err) {

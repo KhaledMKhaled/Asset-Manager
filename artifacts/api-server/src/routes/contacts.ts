@@ -33,7 +33,7 @@ router.post("/contacts", requireAuth, async (req, res): Promise<void> => {
 
 router.get("/contacts/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [item] = await db.select().from(contactsTable).where(eq(contactsTable.id, req.params.id)).limit(1);
+    const [item] = await db.select().from(contactsTable).where(eq(contactsTable.id, (req.params.id as string))).limit(1);
     if (!item) { res.status(404).json({ error: "Not found" }); return; }
     res.json(item);
   } catch (err) {
@@ -44,7 +44,7 @@ router.get("/contacts/:id", requireAuth, async (req, res): Promise<void> => {
 
 router.patch("/contacts/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [item] = await db.update(contactsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(contactsTable.id, req.params.id)).returning();
+    const [item] = await db.update(contactsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(contactsTable.id, (req.params.id as string))).returning();
     if (!item) { res.status(404).json({ error: "Not found" }); return; }
     res.json(item);
   } catch (err) {
@@ -55,7 +55,7 @@ router.patch("/contacts/:id", requireAuth, async (req, res): Promise<void> => {
 
 router.delete("/contacts/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    await db.delete(contactsTable).where(eq(contactsTable.id, req.params.id));
+    await db.delete(contactsTable).where(eq(contactsTable.id, (req.params.id as string)));
     res.status(204).end();
   } catch (err) {
     req.log.error(err);

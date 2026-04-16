@@ -35,9 +35,9 @@ router.post("/conversations", requireAuth, async (req, res): Promise<void> => {
 
 router.get("/conversations/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [conversation] = await db.select().from(conversationsTable).where(eq(conversationsTable.id, req.params.id)).limit(1);
+    const [conversation] = await db.select().from(conversationsTable).where(eq(conversationsTable.id, (req.params.id as string))).limit(1);
     if (!conversation) { res.status(404).json({ error: "Not found" }); return; }
-    const messages = await db.select().from(messagesTable).where(eq(messagesTable.conversationId, req.params.id)).orderBy(desc(messagesTable.createdAt)).limit(100);
+    const messages = await db.select().from(messagesTable).where(eq(messagesTable.conversationId, (req.params.id as string))).orderBy(desc(messagesTable.createdAt)).limit(100);
     res.json({ ...conversation, messages: messages.reverse() });
   } catch (err) {
     req.log.error(err);
@@ -47,7 +47,7 @@ router.get("/conversations/:id", requireAuth, async (req, res): Promise<void> =>
 
 router.patch("/conversations/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [item] = await db.update(conversationsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(conversationsTable.id, req.params.id)).returning();
+    const [item] = await db.update(conversationsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(conversationsTable.id, (req.params.id as string))).returning();
     if (!item) { res.status(404).json({ error: "Not found" }); return; }
     res.json(item);
   } catch (err) {
@@ -61,7 +61,7 @@ router.post("/conversations/:id/messages", requireAuth, async (req, res): Promis
     const { messageText, contentType, isInternalNote, templateId } = req.body;
     if (!messageText) { res.status(400).json({ error: "messageText required" }); return; }
     const [msg] = await db.insert(messagesTable).values({
-      conversationId: req.params.id,
+      conversationId: (req.params.id as string),
       direction: "outbound",
       senderType: "agent",
       contentType: contentType ?? "text",
@@ -72,9 +72,9 @@ router.post("/conversations/:id/messages", requireAuth, async (req, res): Promis
     }).returning();
     await db.update(conversationsTable).set({
       lastMessageAt: new Date(),
-      messageCount: db.$count(messagesTable, eq(messagesTable.conversationId, req.params.id)),
+      messageCount: db.$count(messagesTable, eq(messagesTable.conversationId, (req.params.id as string))),
       updatedAt: new Date(),
-    }).where(eq(conversationsTable.id, req.params.id));
+    }).where(eq(conversationsTable.id, (req.params.id as string)));
     res.status(201).json(msg);
   } catch (err) {
     req.log.error(err);
@@ -86,7 +86,7 @@ router.patch("/conversations/:id/assign", requireAuth, async (req, res): Promise
   try {
     const { assignedTo, team } = req.body;
     if (!assignedTo) { res.status(400).json({ error: "assignedTo required" }); return; }
-    const [item] = await db.update(conversationsTable).set({ assignedTo, team, updatedAt: new Date() }).where(eq(conversationsTable.id, req.params.id)).returning();
+    const [item] = await db.update(conversationsTable).set({ assignedTo, team, updatedAt: new Date() }).where(eq(conversationsTable.id, (req.params.id as string))).returning();
     if (!item) { res.status(404).json({ error: "Not found" }); return; }
     res.json(item);
   } catch (err) {
@@ -97,7 +97,7 @@ router.patch("/conversations/:id/assign", requireAuth, async (req, res): Promise
 
 router.post("/conversations/:id/close", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [item] = await db.update(conversationsTable).set({ status: "resolved", closedAt: new Date(), updatedAt: new Date() }).where(eq(conversationsTable.id, req.params.id)).returning();
+    const [item] = await db.update(conversationsTable).set({ status: "resolved", closedAt: new Date(), updatedAt: new Date() }).where(eq(conversationsTable.id, (req.params.id as string))).returning();
     if (!item) { res.status(404).json({ error: "Not found" }); return; }
     res.json(item);
   } catch (err) {

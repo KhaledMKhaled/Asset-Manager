@@ -201,7 +201,7 @@ router.get("/leads/:id", requireAuth, async (req, res): Promise<void> => {
       .leftJoin(companiesTable, eq(leadsTable.companyId, companiesTable.id))
       .leftJoin(contactsTable, eq(leadsTable.primaryContactId, contactsTable.id))
       .leftJoin(usersTable, eq(leadsTable.assignedTo, usersTable.id))
-      .where(eq(leadsTable.id, req.params.id))
+      .where(eq(leadsTable.id, (req.params.id as string)))
       .limit(1);
 
     if (!lead) {
@@ -210,9 +210,9 @@ router.get("/leads/:id", requireAuth, async (req, res): Promise<void> => {
     }
 
     const [activities, notes, opportunities] = await Promise.all([
-      db.select().from(activitiesTable).where(and(eq(activitiesTable.entityType, "lead"), eq(activitiesTable.entityId, req.params.id))).orderBy(desc(activitiesTable.activityDatetime)).limit(20),
-      db.select().from(notesTable).where(and(eq(notesTable.entityType, "lead"), eq(notesTable.entityId, req.params.id))).orderBy(desc(notesTable.createdAt)).limit(20),
-      db.select().from(opportunitiesTable).where(eq(opportunitiesTable.leadId, req.params.id)).orderBy(desc(opportunitiesTable.createdAt)).limit(10),
+      db.select().from(activitiesTable).where(and(eq(activitiesTable.entityType, "lead"), eq(activitiesTable.entityId, (req.params.id as string)))).orderBy(desc(activitiesTable.activityDatetime)).limit(20),
+      db.select().from(notesTable).where(and(eq(notesTable.entityType, "lead"), eq(notesTable.entityId, (req.params.id as string)))).orderBy(desc(notesTable.createdAt)).limit(20),
+      db.select().from(opportunitiesTable).where(eq(opportunitiesTable.leadId, (req.params.id as string))).orderBy(desc(opportunitiesTable.createdAt)).limit(10),
     ]);
 
     res.json({ ...lead, activities, notes, opportunities });
@@ -224,7 +224,7 @@ router.get("/leads/:id", requireAuth, async (req, res): Promise<void> => {
 
 router.patch("/leads/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [item] = await db.update(leadsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(leadsTable.id, req.params.id)).returning();
+    const [item] = await db.update(leadsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(leadsTable.id, (req.params.id as string))).returning();
     if (!item) { res.status(404).json({ error: "Not found" }); return; }
     res.json(item);
   } catch (err) {
@@ -235,7 +235,7 @@ router.patch("/leads/:id", requireAuth, async (req, res): Promise<void> => {
 
 router.delete("/leads/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    await db.delete(leadsTable).where(eq(leadsTable.id, req.params.id));
+    await db.delete(leadsTable).where(eq(leadsTable.id, (req.params.id as string)));
     res.status(204).end();
   } catch (err) {
     req.log.error(err);
@@ -250,11 +250,11 @@ router.patch("/leads/:id/stage", requireAuth, async (req, res): Promise<void> =>
       currentFunnelStageId: stageContext === "funnel" ? stageId : undefined,
       currentStageId: stageContext === "pipeline" ? stageId : undefined,
       updatedAt: new Date(),
-    }).where(eq(leadsTable.id, req.params.id)).returning();
+    }).where(eq(leadsTable.id, (req.params.id as string))).returning();
     if (!item) { res.status(404).json({ error: "Not found" }); return; }
     await db.insert(timelineEventsTable).values({
       entityType: "lead",
-      entityId: req.params.id,
+      entityId: (req.params.id as string),
       eventType: "stage_changed",
       renderedTitle: `Stage moved`,
       renderedDescription: notes ?? undefined,
@@ -270,8 +270,8 @@ router.post("/leads/:id/score", requireAuth, async (req, res): Promise<void> => 
   try {
     const score = Math.floor(Math.random() * 40 + 60);
     const grade = score >= 90 ? "A" : score >= 75 ? "B" : score >= 60 ? "C" : score >= 40 ? "D" : "F";
-    await db.update(leadsTable).set({ aiLeadScore: String(score), scoreGrade: grade, updatedAt: new Date() }).where(eq(leadsTable.id, req.params.id));
-    res.json({ leadId: req.params.id, score, grade, breakdown: {} });
+    await db.update(leadsTable).set({ aiLeadScore: String(score), scoreGrade: grade, updatedAt: new Date() }).where(eq(leadsTable.id, (req.params.id as string)));
+    res.json({ leadId: (req.params.id as string), score, grade, breakdown: {} });
   } catch (err) {
     req.log.error(err);
     res.status(500).json({ error: "Internal server error" });
@@ -281,7 +281,7 @@ router.post("/leads/:id/score", requireAuth, async (req, res): Promise<void> => 
 router.get("/leads/:id/timeline", requireAuth, async (req, res): Promise<void> => {
   try {
     const events = await db.select().from(timelineEventsTable)
-      .where(and(eq(timelineEventsTable.entityType, "lead"), eq(timelineEventsTable.entityId, req.params.id)))
+      .where(and(eq(timelineEventsTable.entityType, "lead"), eq(timelineEventsTable.entityId, (req.params.id as string))))
       .orderBy(desc(timelineEventsTable.eventTimestamp)).limit(50);
     res.json(events);
   } catch (err) {

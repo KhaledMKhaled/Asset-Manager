@@ -41,7 +41,7 @@ router.post("/integrations", requireAuth, async (req, res): Promise<void> => {
 
 router.patch("/integrations/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [item] = await db.update(integrationsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(integrationsTable.id, req.params.id)).returning();
+    const [item] = await db.update(integrationsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(integrationsTable.id, (req.params.id as string))).returning();
     if (!item) { res.status(404).json({ error: "Not found" }); return; }
     const { credentials: _, ...safe } = item;
     res.json(safe);
@@ -53,7 +53,7 @@ router.patch("/integrations/:id", requireAuth, async (req, res): Promise<void> =
 
 router.delete("/integrations/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    await db.delete(integrationsTable).where(eq(integrationsTable.id, req.params.id));
+    await db.delete(integrationsTable).where(eq(integrationsTable.id, (req.params.id as string)));
     res.status(204).end();
   } catch (err) {
     req.log.error(err);

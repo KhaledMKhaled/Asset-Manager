@@ -34,7 +34,7 @@ router.post("/notes", requireAuth, async (req, res): Promise<void> => {
 
 router.patch("/notes/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [item] = await db.update(notesTable).set({ ...req.body, updatedAt: new Date() }).where(eq(notesTable.id, req.params.id)).returning();
+    const [item] = await db.update(notesTable).set({ ...req.body, updatedAt: new Date() }).where(eq(notesTable.id, (req.params.id as string))).returning();
     if (!item) { res.status(404).json({ error: "Not found" }); return; }
     res.json(item);
   } catch (err) {
@@ -45,7 +45,7 @@ router.patch("/notes/:id", requireAuth, async (req, res): Promise<void> => {
 
 router.delete("/notes/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    await db.delete(notesTable).where(eq(notesTable.id, req.params.id));
+    await db.delete(notesTable).where(eq(notesTable.id, (req.params.id as string)));
     res.status(204).end();
   } catch (err) {
     req.log.error(err);

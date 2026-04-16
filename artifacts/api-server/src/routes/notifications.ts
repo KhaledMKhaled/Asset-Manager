@@ -20,7 +20,7 @@ router.get("/notifications", requireAuth, async (req: AuthRequest, res): Promise
 
 router.patch("/notifications/:id/read", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [item] = await db.update(notificationsTable).set({ isRead: true, readAt: new Date() }).where(eq(notificationsTable.id, req.params.id)).returning();
+    const [item] = await db.update(notificationsTable).set({ isRead: true, readAt: new Date() }).where(eq(notificationsTable.id, (req.params.id as string))).returning();
     if (!item) { res.status(404).json({ error: "Not found" }); return; }
     res.json(item);
   } catch (err) {

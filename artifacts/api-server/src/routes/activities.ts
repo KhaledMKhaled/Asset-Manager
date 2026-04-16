@@ -35,7 +35,7 @@ router.post("/activities", requireAuth, async (req, res): Promise<void> => {
 
 router.get("/activities/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [item] = await db.select().from(activitiesTable).where(eq(activitiesTable.id, req.params.id)).limit(1);
+    const [item] = await db.select().from(activitiesTable).where(eq(activitiesTable.id, (req.params.id as string))).limit(1);
     if (!item) { res.status(404).json({ error: "Not found" }); return; }
     res.json(item);
   } catch (err) {
@@ -46,7 +46,7 @@ router.get("/activities/:id", requireAuth, async (req, res): Promise<void> => {
 
 router.patch("/activities/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [item] = await db.update(activitiesTable).set({ ...req.body, updatedAt: new Date() }).where(eq(activitiesTable.id, req.params.id)).returning();
+    const [item] = await db.update(activitiesTable).set({ ...req.body, updatedAt: new Date() }).where(eq(activitiesTable.id, (req.params.id as string))).returning();
     if (!item) { res.status(404).json({ error: "Not found" }); return; }
     res.json(item);
   } catch (err) {
@@ -57,7 +57,7 @@ router.patch("/activities/:id", requireAuth, async (req, res): Promise<void> => 
 
 router.delete("/activities/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    await db.delete(activitiesTable).where(eq(activitiesTable.id, req.params.id));
+    await db.delete(activitiesTable).where(eq(activitiesTable.id, (req.params.id as string)));
     res.status(204).end();
   } catch (err) {
     req.log.error(err);

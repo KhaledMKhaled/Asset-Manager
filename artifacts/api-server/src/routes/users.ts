@@ -69,7 +69,7 @@ router.get("/users/:id", requireAuth, async (req, res): Promise<void> => {
       isActive: usersTable.isActive,
       createdAt: usersTable.createdAt,
       updatedAt: usersTable.updatedAt,
-    }).from(usersTable).where(eq(usersTable.id, req.params.id)).limit(1);
+    }).from(usersTable).where(eq(usersTable.id, (req.params.id as string))).limit(1);
     if (!user) {
       res.status(404).json({ error: "Not found" });
       return;
@@ -89,7 +89,7 @@ router.patch("/users/:id", requireAuth, async (req, res): Promise<void> => {
       if (req.body[k] !== undefined) updates[k] = req.body[k];
     }
     updates.updatedAt = new Date();
-    const [user] = await db.update(usersTable).set(updates).where(eq(usersTable.id, req.params.id)).returning();
+    const [user] = await db.update(usersTable).set(updates).where(eq(usersTable.id, (req.params.id as string))).returning();
     if (!user) {
       res.status(404).json({ error: "Not found" });
       return;
@@ -104,7 +104,7 @@ router.patch("/users/:id", requireAuth, async (req, res): Promise<void> => {
 
 router.delete("/users/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    await db.delete(usersTable).where(eq(usersTable.id, req.params.id));
+    await db.delete(usersTable).where(eq(usersTable.id, (req.params.id as string)));
     res.status(204).end();
   } catch (err) {
     req.log.error(err);

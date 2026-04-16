@@ -32,7 +32,7 @@ router.post("/message-templates", requireAuth, async (req, res): Promise<void> =
 
 router.patch("/message-templates/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [item] = await db.update(messageTemplatesTable).set({ ...req.body, updatedAt: new Date() }).where(eq(messageTemplatesTable.id, req.params.id)).returning();
+    const [item] = await db.update(messageTemplatesTable).set({ ...req.body, updatedAt: new Date() }).where(eq(messageTemplatesTable.id, (req.params.id as string))).returning();
     if (!item) { res.status(404).json({ error: "Not found" }); return; }
     res.json(item);
   } catch (err) {
@@ -43,7 +43,7 @@ router.patch("/message-templates/:id", requireAuth, async (req, res): Promise<vo
 
 router.delete("/message-templates/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    await db.delete(messageTemplatesTable).where(eq(messageTemplatesTable.id, req.params.id));
+    await db.delete(messageTemplatesTable).where(eq(messageTemplatesTable.id, (req.params.id as string)));
     res.status(204).end();
   } catch (err) {
     req.log.error(err);

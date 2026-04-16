@@ -29,9 +29,9 @@ router.post("/workflows", requireAuth, async (req, res): Promise<void> => {
 
 router.get("/workflows/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [workflow] = await db.select().from(workflowsTable).where(eq(workflowsTable.id, req.params.id)).limit(1);
+    const [workflow] = await db.select().from(workflowsTable).where(eq(workflowsTable.id, (req.params.id as string))).limit(1);
     if (!workflow) { res.status(404).json({ error: "Not found" }); return; }
-    const rules = await db.select().from(automationRulesTable).where(eq(automationRulesTable.workflowId, req.params.id)).orderBy(automationRulesTable.executionOrder);
+    const rules = await db.select().from(automationRulesTable).where(eq(automationRulesTable.workflowId, (req.params.id as string))).orderBy(automationRulesTable.executionOrder);
     res.json({ ...workflow, rules });
   } catch (err) {
     req.log.error(err);
@@ -41,7 +41,7 @@ router.get("/workflows/:id", requireAuth, async (req, res): Promise<void> => {
 
 router.patch("/workflows/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [item] = await db.update(workflowsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(workflowsTable.id, req.params.id)).returning();
+    const [item] = await db.update(workflowsTable).set({ ...req.body, updatedAt: new Date() }).where(eq(workflowsTable.id, (req.params.id as string))).returning();
     if (!item) { res.status(404).json({ error: "Not found" }); return; }
     res.json(item);
   } catch (err) {
@@ -52,7 +52,7 @@ router.patch("/workflows/:id", requireAuth, async (req, res): Promise<void> => {
 
 router.delete("/workflows/:id", requireAuth, async (req, res): Promise<void> => {
   try {
-    await db.delete(workflowsTable).where(eq(workflowsTable.id, req.params.id));
+    await db.delete(workflowsTable).where(eq(workflowsTable.id, (req.params.id as string)));
     res.status(204).end();
   } catch (err) {
     req.log.error(err);
@@ -62,9 +62,9 @@ router.delete("/workflows/:id", requireAuth, async (req, res): Promise<void> => 
 
 router.post("/workflows/:id/toggle", requireAuth, async (req, res): Promise<void> => {
   try {
-    const [current] = await db.select({ isActive: workflowsTable.isActive }).from(workflowsTable).where(eq(workflowsTable.id, req.params.id)).limit(1);
+    const [current] = await db.select({ isActive: workflowsTable.isActive }).from(workflowsTable).where(eq(workflowsTable.id, (req.params.id as string))).limit(1);
     if (!current) { res.status(404).json({ error: "Not found" }); return; }
-    const [item] = await db.update(workflowsTable).set({ isActive: !current.isActive, updatedAt: new Date() }).where(eq(workflowsTable.id, req.params.id)).returning();
+    const [item] = await db.update(workflowsTable).set({ isActive: !current.isActive, updatedAt: new Date() }).where(eq(workflowsTable.id, (req.params.id as string))).returning();
     res.json(item);
   } catch (err) {
     req.log.error(err);
