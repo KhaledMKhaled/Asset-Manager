@@ -1,0 +1,41 @@
+~/workspace$ pnpm build
+
+> workspace@0.0.0 build /home/runner/workspace
+> pnpm run typecheck && pnpm -r --if-present run build
+
+
+> workspace@0.0.0 typecheck /home/runner/workspace
+> pnpm run typecheck:libs && pnpm -r --filter "./artifacts/**" --filter "./scripts" --if-present run typecheck
+
+
+> workspace@0.0.0 typecheck:libs /home/runner/workspace
+> tsc --build
+
+Scope: 4 of 9 workspace projects
+artifacts/api-server typecheck$ tsc -p tsconfig.json --noEmit
+└─ Done in 3.8s
+artifacts/crm typecheck$ tsc -p tsconfig.json --noEmit
+└─ Done in 6.9s
+artifacts/mockup-sandbox typecheck$ tsc -p tsconfig.json --noEmit
+└─ Done in 5.5s
+scripts typecheck$ tsc -p tsconfig.json --noEmit
+└─ Done in 1s
+Scope: 8 of 9 workspace projects
+artifacts/mockup-sandbox build$ vite build
+│ failed to load config from /home/runner/workspace/artifacts/mockup-sandbox/vite.config.ts
+│ error during build:
+│ Error: PORT environment variable is required but was not provided.
+│     at file:///home/runner/workspace/artifacts/mockup-sandbox/node_modules/.vite-temp/vite.config.ts.timestamp-1776380799073-062e0047d7b4…
+│     at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+│     at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+│     at async loadConfigFromBundledFile (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightni…
+│     at async bundleAndLoadConfigFile (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightning…
+│     at async loadConfigFromFile (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1…
+│     at async resolveConfig (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1…
+│     at async createBuilder (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31.1…
+│     at async CAC.<anonymous> (file:///home/runner/workspace/node_modules/.pnpm/vite@7.3.1_@types+node@25.3.5_jiti@2.6.1_lightningcss@1.31…
+└─ Failed in 373ms at /home/runner/workspace/artifacts/mockup-sandbox
+/home/runner/workspace/artifacts/mockup-sandbox:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @workspace/mockup-sandbox@2.0.0 build: `vite build`
+Exit status 1
+ ELIFECYCLE  Command failed with exit code 1.
