@@ -37,6 +37,17 @@ const INTEREST_OPTIONS = [
   { value: "high", label: "High" },
 ];
 
+const CALL_OUTCOME_OPTIONS = [
+  { value: "connected", label: "Connected" },
+  { value: "no_answer", label: "No answer" },
+  { value: "voicemail", label: "Voicemail" },
+  { value: "callback_requested", label: "Callback requested" },
+  { value: "wrong_number", label: "Wrong number" },
+  { value: "qualified", label: "Qualified" },
+  { value: "demo_booked", label: "Demo booked" },
+  { value: "not_interested", label: "Not interested" },
+];
+
 export function ActivityComposer({
   entityId,
   entityLabel,
@@ -58,9 +69,45 @@ export function ActivityComposer({
     nextStep: "",
     interestLevel: "",
   });
+  const [callForm, setCallForm] = useState({
+    durationMinutes: "",
+    reachedCustomer: "yes",
+    decisionMakerPresent: "unknown",
+    objections: "",
+    callbackAt: "",
+    followUpCommitment: "",
+  });
+
+  const isCallActivity = form.activityType === "call";
+  const outcomeOptions = isCallActivity ? CALL_OUTCOME_OPTIONS : OUTCOME_OPTIONS;
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const subject = buildSubject({
+      activityType: form.activityType,
+      fallbackSubject: form.subject,
+      direction: form.direction,
+      outcome: form.outcome,
+    });
+    const content = isCallActivity
+      ? buildCallContent({
+          summary: form.content,
+          durationMinutes: callForm.durationMinutes,
+          reachedCustomer: callForm.reachedCustomer,
+          decisionMakerPresent: callForm.decisionMakerPresent,
+          objections: callForm.objections,
+          callbackAt: callForm.callbackAt,
+          followUpCommitment: callForm.followUpCommitment,
+        })
+      : toOptionalString(form.content);
+    const nextStep = isCallActivity
+      ? buildNextStep({
+          explicitNextStep: form.nextStep,
+          callbackAt: callForm.callbackAt,
+          followUpCommitment: callForm.followUpCommitment,
+        })
+      : toOptionalString(form.nextStep);
+
     await createActivity.mutateAsync({
       data: {
         entityType,
@@ -70,10 +117,10 @@ export function ActivityComposer({
         activityDatetime: form.activityDatetime
           ? new Date(form.activityDatetime).toISOString()
           : undefined,
-        subject: toOptionalString(form.subject),
-        content: toOptionalString(form.content),
+        subject,
+        content,
         outcome: toOptionalString(form.outcome),
-        nextStep: toOptionalString(form.nextStep),
+        nextStep,
         interestLevel: toOptionalString(form.interestLevel),
       },
     });
@@ -92,6 +139,14 @@ export function ActivityComposer({
       nextStep: "",
       interestLevel: "",
     });
+    setCallForm({
+      durationMinutes: "",
+      reachedCustomer: "yes",
+      decisionMakerPresent: "unknown",
+      objections: "",
+      callbackAt: "",
+      followUpCommitment: "",
+    });
   }
 
   return (
@@ -109,7 +164,11 @@ export function ActivityComposer({
             <select
               className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm"
               onChange={(event) =>
-                setForm((current) => ({ ...current, activityType: event.target.value }))
+                setForm((current) => ({
+                  ...current,
+                  activityType: event.target.value,
+                  outcome: event.target.value === "call" ? "connected" : current.outcome,
+                }))
               }
               value={form.activityType}
             >
@@ -152,7 +211,8 @@ export function ActivityComposer({
               }
               value={form.outcome}
             >
-              {OUTCOME_OPTIONS.map((option) => (
+              {!isCallActivity ? <option value="">Not set</option> : null}
+              {outcomeOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -160,6 +220,104 @@ export function ActivityComposer({
             </select>
           </Field>
         </div>
+
+        {isCallActivity ? (
+          <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50/80 p-4">
+            <div className="mb-4">
+              <p className="text-sm font-semibold">Call outcome form</p>
+              <p className="mt-1 text-sm text-muted">
+                Capture the structured result of the conversation so the next rep sees exactly what happened.
+              </p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <Field label="Duration (minutes)">
+                <Input
+                  min="0"
+                  onChange={(event) =>
+                    setCallForm((current) => ({
+                      ...current,
+                      durationMinutes: event.target.value,
+                    }))
+                  }
+                  placeholder="12"
+                  type="number"
+                  value={callForm.durationMinutes}
+                />
+              </Field>
+              <Field label="Reached customer">
+                <select
+                  className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm"
+                  onChange={(event) =>
+                    setCallForm((current) => ({
+                      ...current,
+                      reachedCustomer: event.target.value,
+                    }))
+                  }
+                  value={callForm.reachedCustomer}
+                >
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+                </select>
+              </Field>
+              <Field label="Decision maker present">
+                <select
+                  className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm"
+                  onChange={(event) =>
+                    setCallForm((current) => ({
+                      ...current,
+                      decisionMakerPresent: event.target.value,
+                    }))
+                  }
+                  value={callForm.decisionMakerPresent}
+                >
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+                  <option value="unknown">Unknown</option>
+                </select>
+              </Field>
+              <Field label="Callback at">
+                <Input
+                  onChange={(event) =>
+                    setCallForm((current) => ({
+                      ...current,
+                      callbackAt: event.target.value,
+                    }))
+                  }
+                  type="datetime-local"
+                  value={callForm.callbackAt}
+                />
+              </Field>
+            </div>
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <Field label="Objections or blockers">
+                <textarea
+                  className="min-h-28 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+                  onChange={(event) =>
+                    setCallForm((current) => ({
+                      ...current,
+                      objections: event.target.value,
+                    }))
+                  }
+                  placeholder="Pricing concern, integration blocker, timing issue, or no objections."
+                  value={callForm.objections}
+                />
+              </Field>
+              <Field label="Follow-up commitment">
+                <textarea
+                  className="min-h-28 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+                  onChange={(event) =>
+                    setCallForm((current) => ({
+                      ...current,
+                      followUpCommitment: event.target.value,
+                    }))
+                  }
+                  placeholder="What was promised, who owns it, and what should happen next."
+                  value={callForm.followUpCommitment}
+                />
+              </Field>
+            </div>
+          </div>
+        ) : null}
 
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="Subject">
@@ -195,7 +353,11 @@ export function ActivityComposer({
               onChange={(event) =>
                 setForm((current) => ({ ...current, content: event.target.value }))
               }
-              placeholder="What happened, what was discussed, and any objections or signals."
+              placeholder={
+                isCallActivity
+                  ? "What was discussed on the call, what signals you heard, and what changed."
+                  : "What happened, what was discussed, and any objections or signals."
+              }
               value={form.content}
             />
           </Field>
@@ -205,7 +367,11 @@ export function ActivityComposer({
               onChange={(event) =>
                 setForm((current) => ({ ...current, nextStep: event.target.value }))
               }
-              placeholder="Document the next action, owner, or follow-up promise."
+              placeholder={
+                isCallActivity
+                  ? "Document the explicit next action if it differs from the call commitment above."
+                  : "Document the next action, owner, or follow-up promise."
+              }
               value={form.nextStep}
             />
           </Field>
@@ -227,6 +393,111 @@ function toDateTimeLocalValue(value: Date) {
 function toOptionalString(value: string) {
   const normalized = value.trim();
   return normalized ? normalized : undefined;
+}
+
+function buildSubject({
+  activityType,
+  direction,
+  fallbackSubject,
+  outcome,
+}: {
+  activityType: string;
+  direction: string;
+  fallbackSubject: string;
+  outcome: string;
+}) {
+  const subject = toOptionalString(fallbackSubject);
+  if (subject) {
+    return subject;
+  }
+
+  const parts = [formatLabel(direction), formatLabel(activityType)];
+  if (outcome) {
+    parts.push(`(${formatLabel(outcome)})`);
+  }
+  return parts.join(" ");
+}
+
+function buildCallContent({
+  summary,
+  durationMinutes,
+  reachedCustomer,
+  decisionMakerPresent,
+  objections,
+  callbackAt,
+  followUpCommitment,
+}: {
+  summary: string;
+  durationMinutes: string;
+  reachedCustomer: string;
+  decisionMakerPresent: string;
+  objections: string;
+  callbackAt: string;
+  followUpCommitment: string;
+}) {
+  const sections = [
+    `Call summary: ${toOptionalString(summary) ?? "No summary provided."}`,
+    `Reached customer: ${formatLabel(reachedCustomer)}`,
+    `Decision maker present: ${formatLabel(decisionMakerPresent)}`,
+  ];
+
+  if (toOptionalString(durationMinutes)) {
+    sections.push(`Duration (minutes): ${durationMinutes.trim()}`);
+  }
+
+  if (toOptionalString(objections)) {
+    sections.push(`Objections / blockers: ${objections.trim()}`);
+  }
+
+  if (toOptionalString(callbackAt)) {
+    sections.push(`Callback requested: ${new Date(callbackAt).toLocaleString()}`);
+  }
+
+  if (toOptionalString(followUpCommitment)) {
+    sections.push(`Follow-up commitment: ${followUpCommitment.trim()}`);
+  }
+
+  return sections.join("\n");
+}
+
+function buildNextStep({
+  explicitNextStep,
+  callbackAt,
+  followUpCommitment,
+}: {
+  explicitNextStep: string;
+  callbackAt: string;
+  followUpCommitment: string;
+}) {
+  const preferred = toOptionalString(explicitNextStep);
+  if (preferred) {
+    return preferred;
+  }
+
+  const commitment = toOptionalString(followUpCommitment);
+  const callback = toOptionalString(callbackAt);
+
+  if (commitment && callback) {
+    return `${commitment} by ${new Date(callbackAt).toLocaleString()}`;
+  }
+
+  if (commitment) {
+    return commitment;
+  }
+
+  if (callback) {
+    return `Call back on ${new Date(callbackAt).toLocaleString()}`;
+  }
+
+  return undefined;
+}
+
+function formatLabel(value: string) {
+  return value
+    .split(/[_-\s]/g)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 }
 
 function Field({ children, label }: { label: string; children: React.ReactNode }) {
