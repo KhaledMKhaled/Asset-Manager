@@ -2751,3 +2751,408 @@ export const UpdateSettingResponse = zod.object({
   category: zod.string().nullish(),
   updatedAt: zod.string(),
 });
+
+/**
+ * @summary List channel accounts
+ */
+export const ListChannelAccountsResponseItem = zod.object({
+  id: zod.string(),
+  channelType: zod.string(),
+  externalAccountId: zod.string().nullish(),
+  displayName: zod.string().nullish(),
+  status: zod.string(),
+  integrationId: zod.string().nullish(),
+  defaultTeamId: zod.string().nullish(),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+export const ListChannelAccountsResponse = zod.array(
+  ListChannelAccountsResponseItem,
+);
+
+/**
+ * @summary Create channel account
+ */
+export const CreateChannelAccountBody = zod.object({
+  channelType: zod.string(),
+  externalAccountId: zod.string().optional(),
+  displayName: zod.string().optional(),
+  integrationId: zod.string().optional(),
+  defaultTeamId: zod.string().optional(),
+});
+
+/**
+ * @summary Update channel account
+ */
+export const UpdateChannelAccountParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const UpdateChannelAccountBody = zod.object({
+  displayName: zod.string().optional(),
+  status: zod.string().optional(),
+  defaultTeamId: zod.string().optional(),
+});
+
+export const UpdateChannelAccountResponse = zod.object({
+  id: zod.string(),
+  channelType: zod.string(),
+  externalAccountId: zod.string().nullish(),
+  displayName: zod.string().nullish(),
+  status: zod.string(),
+  integrationId: zod.string().nullish(),
+  defaultTeamId: zod.string().nullish(),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+
+/**
+ * @summary Delete channel account
+ */
+export const DeleteChannelAccountParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+/**
+ * @summary List custom field definitions
+ */
+export const ListCustomFieldsQueryParams = zod.object({
+  entityType: zod.coerce.string().optional(),
+});
+
+export const ListCustomFieldsResponseItem = zod.object({
+  id: zod.string(),
+  entityType: zod.string(),
+  fieldName: zod.string(),
+  fieldLabelEn: zod.string().nullish(),
+  fieldLabelAr: zod.string().nullish(),
+  fieldType: zod.string(),
+  isRequired: zod.boolean(),
+  isActive: zod.boolean(),
+  position: zod.number(),
+  fieldGroup: zod.string().nullish(),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+export const ListCustomFieldsResponse = zod.array(ListCustomFieldsResponseItem);
+
+/**
+ * @summary Create custom field definition
+ */
+export const CreateCustomFieldBody = zod.object({
+  entityType: zod.string(),
+  fieldName: zod.string(),
+  fieldLabelEn: zod.string().optional(),
+  fieldLabelAr: zod.string().optional(),
+  fieldType: zod.string(),
+  isRequired: zod.boolean().optional(),
+  fieldGroup: zod.string().optional(),
+});
+
+/**
+ * @summary Update custom field definition
+ */
+export const UpdateCustomFieldParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const UpdateCustomFieldBody = zod.object({
+  fieldLabelEn: zod.string().optional(),
+  fieldLabelAr: zod.string().optional(),
+  isRequired: zod.boolean().optional(),
+  isActive: zod.boolean().optional(),
+  position: zod.number().optional(),
+});
+
+export const UpdateCustomFieldResponse = zod.object({
+  id: zod.string(),
+  entityType: zod.string(),
+  fieldName: zod.string(),
+  fieldLabelEn: zod.string().nullish(),
+  fieldLabelAr: zod.string().nullish(),
+  fieldType: zod.string(),
+  isRequired: zod.boolean(),
+  isActive: zod.boolean(),
+  position: zod.number(),
+  fieldGroup: zod.string().nullish(),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+
+/**
+ * @summary Delete custom field
+ */
+export const DeleteCustomFieldParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+/**
+ * @summary List audit logs
+ */
+export const ListAuditLogsQueryParams = zod.object({
+  entityType: zod.coerce.string().optional(),
+  userId: zod.coerce.string().optional(),
+  action: zod.coerce.string().optional(),
+  limit: zod.coerce.number().optional(),
+});
+
+export const ListAuditLogsResponseItem = zod.object({
+  id: zod.string(),
+  userId: zod.string().nullish(),
+  entityType: zod.string().nullish(),
+  entityId: zod.string().nullish(),
+  action: zod.string(),
+  oldValues: zod.object({}).passthrough().nullish(),
+  newValues: zod.object({}).passthrough().nullish(),
+  ipAddress: zod.string().nullish(),
+  createdAt: zod.string(),
+});
+export const ListAuditLogsResponse = zod.array(ListAuditLogsResponseItem);
+
+/**
+ * @summary List bot personas
+ */
+export const ListBotPersonasResponseItem = zod.object({
+  id: zod.string(),
+  name: zod.string(),
+  nameAr: zod.string().nullish(),
+  description: zod.string().nullish(),
+  botDisplayName: zod.string().nullish(),
+  botRole: zod.string().nullish(),
+  tone: zod.string(),
+  primaryLanguage: zod.string(),
+  isActive: zod.boolean(),
+  isDefault: zod.boolean(),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+export const ListBotPersonasResponse = zod.array(ListBotPersonasResponseItem);
+
+/**
+ * @summary Create bot persona
+ */
+export const CreateBotPersonaBody = zod.object({
+  name: zod.string(),
+  nameAr: zod.string().optional(),
+  description: zod.string().optional(),
+  botDisplayName: zod.string().optional(),
+  botRole: zod.string().optional(),
+  tone: zod.string().optional(),
+  primaryLanguage: zod.string().optional(),
+});
+
+/**
+ * @summary Get bot persona
+ */
+export const GetBotPersonaParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const GetBotPersonaResponse = zod.object({
+  id: zod.string(),
+  name: zod.string(),
+  nameAr: zod.string().nullish(),
+  description: zod.string().nullish(),
+  botDisplayName: zod.string().nullish(),
+  botRole: zod.string().nullish(),
+  tone: zod.string(),
+  primaryLanguage: zod.string(),
+  isActive: zod.boolean(),
+  isDefault: zod.boolean(),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+
+/**
+ * @summary Update bot persona
+ */
+export const UpdateBotPersonaParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const UpdateBotPersonaBody = zod.object({
+  name: zod.string().optional(),
+  nameAr: zod.string().optional(),
+  description: zod.string().optional(),
+  botDisplayName: zod.string().optional(),
+  tone: zod.string().optional(),
+  isActive: zod.boolean().optional(),
+});
+
+export const UpdateBotPersonaResponse = zod.object({
+  id: zod.string(),
+  name: zod.string(),
+  nameAr: zod.string().nullish(),
+  description: zod.string().nullish(),
+  botDisplayName: zod.string().nullish(),
+  botRole: zod.string().nullish(),
+  tone: zod.string(),
+  primaryLanguage: zod.string(),
+  isActive: zod.boolean(),
+  isDefault: zod.boolean(),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+
+/**
+ * @summary Delete bot persona
+ */
+export const DeleteBotPersonaParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+/**
+ * @summary List bot flows
+ */
+export const ListBotFlowsResponseItem = zod.object({
+  id: zod.string(),
+  name: zod.string(),
+  nameAr: zod.string().nullish(),
+  flowType: zod.string(),
+  triggerType: zod.string(),
+  personaId: zod.string().nullish(),
+  isActive: zod.boolean(),
+  maxMessages: zod.number().optional(),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+export const ListBotFlowsResponse = zod.array(ListBotFlowsResponseItem);
+
+/**
+ * @summary Create bot flow
+ */
+export const CreateBotFlowBody = zod.object({
+  name: zod.string(),
+  nameAr: zod.string().optional(),
+  flowType: zod.string(),
+  triggerType: zod.string(),
+  personaId: zod.string().optional(),
+});
+
+/**
+ * @summary Get bot flow with steps
+ */
+export const GetBotFlowParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const GetBotFlowResponse = zod.object({
+  id: zod.string(),
+  name: zod.string(),
+  nameAr: zod.string().nullish(),
+  flowType: zod.string(),
+  triggerType: zod.string(),
+  personaId: zod.string().nullish(),
+  isActive: zod.boolean(),
+  maxMessages: zod.number().optional(),
+  steps: zod.array(
+    zod.object({
+      id: zod.string(),
+      flowId: zod.string(),
+      stepType: zod.string(),
+      position: zod.number(),
+      templateId: zod.string().nullish(),
+      aiPromptTemplate: zod.string().nullish(),
+      waitMinutes: zod.number().nullish(),
+      createdAt: zod.string(),
+    }),
+  ),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+
+/**
+ * @summary Update bot flow
+ */
+export const UpdateBotFlowParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const UpdateBotFlowBody = zod.object({
+  name: zod.string().optional(),
+  nameAr: zod.string().optional(),
+  isActive: zod.boolean().optional(),
+  maxMessages: zod.number().optional(),
+});
+
+export const UpdateBotFlowResponse = zod.object({
+  id: zod.string(),
+  name: zod.string(),
+  nameAr: zod.string().nullish(),
+  flowType: zod.string(),
+  triggerType: zod.string(),
+  personaId: zod.string().nullish(),
+  isActive: zod.boolean(),
+  maxMessages: zod.number().optional(),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+
+/**
+ * @summary Delete bot flow
+ */
+export const DeleteBotFlowParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+/**
+ * @summary List all agent availability statuses
+ */
+export const ListAgentAvailabilityResponseItem = zod.object({
+  id: zod.string(),
+  userId: zod.string(),
+  status: zod.string(),
+  activeConversationCount: zod.number(),
+  maxConcurrentConversations: zod.number(),
+  lastActivityAt: zod.string().optional(),
+  statusChangedAt: zod.string().optional(),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+export const ListAgentAvailabilityResponse = zod.array(
+  ListAgentAvailabilityResponseItem,
+);
+
+/**
+ * @summary Get agent availability
+ */
+export const GetAgentAvailabilityParams = zod.object({
+  userId: zod.coerce.string(),
+});
+
+export const GetAgentAvailabilityResponse = zod.object({
+  id: zod.string(),
+  userId: zod.string(),
+  status: zod.string(),
+  activeConversationCount: zod.number(),
+  maxConcurrentConversations: zod.number(),
+  lastActivityAt: zod.string().optional(),
+  statusChangedAt: zod.string().optional(),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+
+/**
+ * @summary Create or update agent availability
+ */
+export const UpsertAgentAvailabilityParams = zod.object({
+  userId: zod.coerce.string(),
+});
+
+export const UpsertAgentAvailabilityBody = zod.object({
+  status: zod.string().optional(),
+  activeConversationCount: zod.number().optional(),
+  maxConcurrentConversations: zod.number().optional(),
+});
+
+export const UpsertAgentAvailabilityResponse = zod.object({
+  id: zod.string(),
+  userId: zod.string(),
+  status: zod.string(),
+  activeConversationCount: zod.number(),
+  maxConcurrentConversations: zod.number(),
+  lastActivityAt: zod.string().optional(),
+  statusChangedAt: zod.string().optional(),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});

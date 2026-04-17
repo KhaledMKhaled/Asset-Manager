@@ -1227,6 +1227,216 @@ export interface UpdateSettingBody {
   value: string;
 }
 
+export interface ChannelAccount {
+  id: string;
+  channelType: string;
+  /** @nullable */
+  externalAccountId?: string | null;
+  /** @nullable */
+  displayName?: string | null;
+  status: string;
+  /** @nullable */
+  integrationId?: string | null;
+  /** @nullable */
+  defaultTeamId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateChannelAccountBody {
+  channelType: string;
+  externalAccountId?: string;
+  displayName?: string;
+  integrationId?: string;
+  defaultTeamId?: string;
+}
+
+export interface UpdateChannelAccountBody {
+  displayName?: string;
+  status?: string;
+  defaultTeamId?: string;
+}
+
+export interface CustomFieldDefinition {
+  id: string;
+  entityType: string;
+  fieldName: string;
+  /** @nullable */
+  fieldLabelEn?: string | null;
+  /** @nullable */
+  fieldLabelAr?: string | null;
+  fieldType: string;
+  isRequired: boolean;
+  isActive: boolean;
+  position: number;
+  /** @nullable */
+  fieldGroup?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateCustomFieldBody {
+  entityType: string;
+  fieldName: string;
+  fieldLabelEn?: string;
+  fieldLabelAr?: string;
+  fieldType: string;
+  isRequired?: boolean;
+  fieldGroup?: string;
+}
+
+export interface UpdateCustomFieldBody {
+  fieldLabelEn?: string;
+  fieldLabelAr?: string;
+  isRequired?: boolean;
+  isActive?: boolean;
+  position?: number;
+}
+
+/**
+ * @nullable
+ */
+export type AuditLogOldValues = { [key: string]: unknown } | null;
+
+/**
+ * @nullable
+ */
+export type AuditLogNewValues = { [key: string]: unknown } | null;
+
+export interface AuditLog {
+  id: string;
+  /** @nullable */
+  userId?: string | null;
+  /** @nullable */
+  entityType?: string | null;
+  /** @nullable */
+  entityId?: string | null;
+  action: string;
+  /** @nullable */
+  oldValues?: AuditLogOldValues;
+  /** @nullable */
+  newValues?: AuditLogNewValues;
+  /** @nullable */
+  ipAddress?: string | null;
+  createdAt: string;
+}
+
+export interface BotPersona {
+  id: string;
+  name: string;
+  /** @nullable */
+  nameAr?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  botDisplayName?: string | null;
+  /** @nullable */
+  botRole?: string | null;
+  tone: string;
+  primaryLanguage: string;
+  isActive: boolean;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateBotPersonaBody {
+  name: string;
+  nameAr?: string;
+  description?: string;
+  botDisplayName?: string;
+  botRole?: string;
+  tone?: string;
+  primaryLanguage?: string;
+}
+
+export interface UpdateBotPersonaBody {
+  name?: string;
+  nameAr?: string;
+  description?: string;
+  botDisplayName?: string;
+  tone?: string;
+  isActive?: boolean;
+}
+
+export interface BotFlow {
+  id: string;
+  name: string;
+  /** @nullable */
+  nameAr?: string | null;
+  flowType: string;
+  triggerType: string;
+  /** @nullable */
+  personaId?: string | null;
+  isActive: boolean;
+  maxMessages?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BotFlowStep {
+  id: string;
+  flowId: string;
+  stepType: string;
+  position: number;
+  /** @nullable */
+  templateId?: string | null;
+  /** @nullable */
+  aiPromptTemplate?: string | null;
+  /** @nullable */
+  waitMinutes?: number | null;
+  createdAt: string;
+}
+
+export interface BotFlowDetail {
+  id: string;
+  name: string;
+  /** @nullable */
+  nameAr?: string | null;
+  flowType: string;
+  triggerType: string;
+  /** @nullable */
+  personaId?: string | null;
+  isActive: boolean;
+  maxMessages?: number;
+  steps: BotFlowStep[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateBotFlowBody {
+  name: string;
+  nameAr?: string;
+  flowType: string;
+  triggerType: string;
+  personaId?: string;
+}
+
+export interface UpdateBotFlowBody {
+  name?: string;
+  nameAr?: string;
+  isActive?: boolean;
+  maxMessages?: number;
+}
+
+export interface AgentAvailability {
+  id: string;
+  userId: string;
+  status: string;
+  activeConversationCount: number;
+  maxConcurrentConversations: number;
+  lastActivityAt?: string;
+  statusChangedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UpsertAgentAvailabilityBody {
+  status?: string;
+  activeConversationCount?: number;
+  maxConcurrentConversations?: number;
+}
+
 export type ListUsersParams = {
   role?: string;
   isActive?: boolean;
@@ -1311,5 +1521,16 @@ export type GetPipelineBoardParams = {
 };
 
 export type GetRecentActivityParams = {
+  limit?: number;
+};
+
+export type ListCustomFieldsParams = {
+  entityType?: string;
+};
+
+export type ListAuditLogsParams = {
+  entityType?: string;
+  userId?: string;
+  action?: string;
   limit?: number;
 };
