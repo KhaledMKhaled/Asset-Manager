@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Cairo } from "next/font/google";
 import "../globals.css";
-import { Sidebar } from "@/components/layout/Sidebar";
-import { Header } from "@/components/layout/Header";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
@@ -35,18 +33,10 @@ export default async function RootLayout({
   const currentFont = locale === 'ar' ? cairo.className : inter.className;
 
   return (
-    <html lang={locale} dir={dir} className="dark">
-      <body className={`${currentFont} min-h-screen flex bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50`}>
+    <html lang={locale} dir={dir}>
+      <body className={`${currentFont} min-h-screen bg-[var(--background)] text-[var(--foreground)]`}>
         <NextIntlClientProvider messages={messages} locale={locale}>
-          <Sidebar />
-          <div className="flex-1 flex flex-col min-w-0">
-            <Header />
-            <QueryProvider>
-              <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
-                {children}
-              </main>
-            </QueryProvider>
-          </div>
+          <QueryProvider>{children}</QueryProvider>
         </NextIntlClientProvider>
       </body>
     </html>
