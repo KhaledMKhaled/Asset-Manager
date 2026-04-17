@@ -20,6 +20,7 @@ import {
 } from "@workspace/api-client-react";
 import { SectionCard } from "@/components/crm/blocks";
 import { ActivityComposer } from "@/components/crm/activity-composer";
+import { ProfileMessagingWorkspace } from "@/components/crm/profile-messaging-workspace";
 import { NotesWorkspace } from "@/components/crm/notes-workspace";
 import { ScoreBadge, StatusBadge } from "@/components/crm/badges";
 import { EmptyPanel, FeedCard, ProfileTabBar } from "@/components/crm/profile-tabs";
@@ -301,6 +302,7 @@ export default function LeadDetailPage({
             <ProfileTimelineBrowser
               emptyBody="No timeline events are available yet for this lead."
               emptyTitle="Timeline is empty"
+              exportName={`${lead?.leadCode ?? "lead"}-timeline`}
               items={timelineItems}
               noResultsBody="No lead timeline events match the current search or source filter."
             />
@@ -345,35 +347,26 @@ export default function LeadDetailPage({
 
         {activeTab === "messaging" ? (
           <SectionCard description="Channel threads linked to the lead and its primary contact." title="Messaging">
-            <div className="space-y-3">
-              {linkedConversations.length ? (
-                linkedConversations.map((conversation) => (
-                  <FeedCard
-                    key={conversation.id}
-                    eyebrow={conversation.channel}
-                    title={conversation.participantName ?? "Conversation"}
-                    description={conversation.aiSummary ?? `${conversation.messageCount} messages in ${conversation.status} status.`}
-                    meta={formatDateTime(conversation.lastMessageAt ?? conversation.openedAt)}
-                  >
-                    <div className="mt-3 flex flex-wrap gap-3 text-sm text-muted">
-                      <span>Status: {conversation.status}</span>
-                      <span>Unread: {conversation.unreadCount}</span>
-                      <Link
-                        className="font-medium text-slate-900 underline underline-offset-4"
-                        href={`/${locale}/inbox/${conversation.id}`}
-                      >
-                        Open thread
-                      </Link>
-                    </div>
-                  </FeedCard>
-                ))
-              ) : (
-                <EmptyPanel
-                  body="Messaging threads will appear here once conversations are linked to this lead or its primary contact."
-                  title="No messaging threads"
-                />
-              )}
-            </div>
+            <ProfileMessagingWorkspace
+              contextLinks={[
+                ...(lead?.companyId
+                  ? [{ href: `/${locale}/companies/${lead.companyId}`, label: "Open company" }]
+                  : []),
+                ...(lead?.primaryContactId
+                  ? [{ href: `/${locale}/contacts/${lead.primaryContactId}`, label: "Open contact" }]
+                  : []),
+              ]}
+              conversations={linkedConversations}
+              emptyBody="Messaging threads will appear here once conversations are linked to this lead or its primary contact."
+              resolveConversationLinks={(conversation) => [
+                ...(conversation.linkedLeadId
+                  ? [{ href: `/${locale}/leads/${conversation.linkedLeadId}`, label: "Open lead" }]
+                  : []),
+                ...(conversation.linkedContactId
+                  ? [{ href: `/${locale}/contacts/${conversation.linkedContactId}`, label: "Open contact" }]
+                  : []),
+              ]}
+            />
           </SectionCard>
         ) : null}
       </div>

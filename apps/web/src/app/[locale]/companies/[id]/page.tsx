@@ -14,6 +14,7 @@ import {
   useUpdateCompany,
 } from "@workspace/api-client-react";
 import { ActivityComposer } from "@/components/crm/activity-composer";
+import { ProfileMessagingWorkspace } from "@/components/crm/profile-messaging-workspace";
 import { SectionCard } from "@/components/crm/blocks";
 import { NotesWorkspace } from "@/components/crm/notes-workspace";
 import { EmptyPanel, FeedCard, ProfileTabBar } from "@/components/crm/profile-tabs";
@@ -257,6 +258,7 @@ export default function CompanyDetailPage({
             <ProfileTimelineBrowser
               emptyBody="Activities and notes will appear here as the account team works the company record."
               emptyTitle="Timeline is empty"
+              exportName={`${company?.companyName ?? "company"}-timeline`}
               items={timelineItems}
               noResultsBody="No company timeline items match the current search or type filter."
             />
@@ -301,35 +303,19 @@ export default function CompanyDetailPage({
 
         {activeTab === "messaging" ? (
           <SectionCard description="Inbox threads associated with contacts at this company." title="Messaging">
-            <div className="space-y-3">
-              {linkedConversations.length ? (
-                linkedConversations.map((conversation) => (
-                  <FeedCard
-                    key={conversation.id}
-                    eyebrow={conversation.channel}
-                    title={conversation.participantName ?? "Conversation"}
-                    description={conversation.aiSummary ?? `${conversation.messageCount} messages in ${conversation.status} status.`}
-                    meta={formatDateTime(conversation.lastMessageAt ?? conversation.openedAt)}
-                  >
-                    <div className="mt-3 flex flex-wrap gap-3 text-sm text-muted">
-                      <span>Status: {conversation.status}</span>
-                      <span>Unread: {conversation.unreadCount}</span>
-                      <Link
-                        className="font-medium text-slate-900 underline underline-offset-4"
-                        href={`/${locale}/inbox/${conversation.id}`}
-                      >
-                        Open thread
-                      </Link>
-                    </div>
-                  </FeedCard>
-                ))
-              ) : (
-                <EmptyPanel
-                  body="Messaging threads will appear here once linked contacts have active conversations."
-                  title="No messaging threads"
-                />
-              )}
-            </div>
+            <ProfileMessagingWorkspace
+              contextLinks={(contacts ?? []).slice(0, 3).map((contact) => ({
+                href: `/${locale}/contacts/${contact.id}`,
+                label: `Open ${contact.fullName}`,
+              }))}
+              conversations={linkedConversations}
+              emptyBody="Messaging threads will appear here once linked contacts have active conversations."
+              resolveConversationLinks={(conversation) => [
+                ...(conversation.linkedContactId
+                  ? [{ href: `/${locale}/contacts/${conversation.linkedContactId}`, label: "Open contact" }]
+                  : []),
+              ]}
+            />
           </SectionCard>
         ) : null}
       </div>

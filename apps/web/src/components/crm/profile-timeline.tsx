@@ -21,12 +21,14 @@ export interface ProfileTimelineItem {
 export function ProfileTimelineBrowser({
   emptyBody,
   emptyTitle,
+  exportName = "timeline",
   items,
   noResultsBody = "Try adjusting the search or filter to widen the timeline.",
 }: {
   items: ProfileTimelineItem[];
   emptyTitle: string;
   emptyBody: string;
+  exportName?: string;
   noResultsBody?: string;
 }) {
   const [search, setSearch] = useState("");
@@ -93,6 +95,33 @@ export function ProfileTimelineBrowser({
     }));
   }
 
+  function handleExportJson() {
+    downloadFile({
+      content: JSON.stringify(filteredItems, null, 2),
+      filename: `${sanitizeFilename(exportName)}.json`,
+      type: "application/json",
+    });
+  }
+
+  function handleExportCsv() {
+    const rows = [
+      ["timestamp", "category", "eyebrow", "title", "description"],
+      ...filteredItems.map((item) => [
+        item.timestamp,
+        item.category,
+        item.eyebrow ?? "",
+        item.title,
+        item.description ?? "",
+      ]),
+    ];
+
+    downloadFile({
+      content: rows.map((row) => row.map(escapeCsvCell).join(",")).join("\n"),
+      filename: `${sanitizeFilename(exportName)}.csv`,
+      type: "text/csv;charset=utf-8",
+    });
+  }
+
   return (
     <div className="space-y-4">
       <div className="rounded-[1.5rem] bg-white/70 p-4">
@@ -123,16 +152,24 @@ export function ProfileTimelineBrowser({
             <span>
               Showing {visibleItems.length} of {filteredItems.length} matching items
             </span>
-            {filteredItems.length > DEFAULT_VISIBLE_ITEMS ? (
-              <Button
-                onClick={() => setShowAll((current) => !current)}
-                size="sm"
-                type="button"
-                variant="ghost"
-              >
-                {showAll ? `Collapse to ${DEFAULT_VISIBLE_ITEMS}` : `Show all ${filteredItems.length}`}
+            <div className="flex flex-wrap gap-2">
+              <Button onClick={handleExportCsv} size="sm" type="button" variant="outline">
+                Export CSV
               </Button>
-            ) : null}
+              <Button onClick={handleExportJson} size="sm" type="button" variant="outline">
+                Export JSON
+              </Button>
+              {filteredItems.length > DEFAULT_VISIBLE_ITEMS ? (
+                <Button
+                  onClick={() => setShowAll((current) => !current)}
+                  size="sm"
+                  type="button"
+                  variant="ghost"
+                >
+                  {showAll ? `Collapse to ${DEFAULT_VISIBLE_ITEMS}` : `Show all ${filteredItems.length}`}
+                </Button>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>
@@ -191,4 +228,32 @@ function formatLabel(value: string) {
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function escapeCsvCell(value: string) {
+  return `"${value.replaceAll('"', '""')}"`;
+}
+
+function sanitizeFilename(value: string) {
+  return value.trim().toLowerCase().replace(/[^a-z0-9-_]+/g, "-");
+}
+
+function downloadFile({
+  content,
+  filename,
+  type,
+}: {
+  content: string;
+  filename: string;
+  type: string;
+}) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
 }

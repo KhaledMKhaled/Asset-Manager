@@ -13,6 +13,7 @@ import {
   useUpdateContact,
 } from "@workspace/api-client-react";
 import { ActivityComposer } from "@/components/crm/activity-composer";
+import { ProfileMessagingWorkspace } from "@/components/crm/profile-messaging-workspace";
 import { SectionCard } from "@/components/crm/blocks";
 import { NotesWorkspace } from "@/components/crm/notes-workspace";
 import { EmptyPanel, FeedCard, ProfileTabBar } from "@/components/crm/profile-tabs";
@@ -287,6 +288,7 @@ export default function ContactDetailPage({
             <ProfileTimelineBrowser
               emptyBody="Activities and notes will collect here as the contact record gets used."
               emptyTitle="Timeline is empty"
+              exportName={`${contact?.fullName ?? "contact"}-timeline`}
               items={timelineItems}
               noResultsBody="No contact timeline items match the current search or type filter."
             />
@@ -331,35 +333,20 @@ export default function ContactDetailPage({
 
         {activeTab === "messaging" ? (
           <SectionCard description="Unified inbox context linked to this contact." title="Messaging">
-            <div className="space-y-3">
-              {linkedConversations.length ? (
-                linkedConversations.map((conversation) => (
-                  <FeedCard
-                    key={conversation.id}
-                    eyebrow={conversation.channel}
-                    title={conversation.participantName ?? "Conversation"}
-                    description={conversation.aiSummary ?? `${conversation.messageCount} messages in ${conversation.status} status.`}
-                    meta={formatDateTime(conversation.lastMessageAt ?? conversation.openedAt)}
-                  >
-                    <div className="mt-3 flex flex-wrap gap-3 text-sm text-muted">
-                      <span>Status: {conversation.status}</span>
-                      <span>Unread: {conversation.unreadCount}</span>
-                      <Link
-                        className="font-medium text-slate-900 underline underline-offset-4"
-                        href={`/${locale}/inbox/${conversation.id}`}
-                      >
-                        Open thread
-                      </Link>
-                    </div>
-                  </FeedCard>
-                ))
-              ) : (
-                <EmptyPanel
-                  body="No messaging threads are linked to this contact yet."
-                  title="No messaging threads"
-                />
-              )}
-            </div>
+            <ProfileMessagingWorkspace
+              contextLinks={
+                contact?.companyId
+                  ? [{ href: `/${locale}/companies/${contact.companyId}`, label: "Open company" }]
+                  : []
+              }
+              conversations={linkedConversations}
+              emptyBody="No messaging threads are linked to this contact yet."
+              resolveConversationLinks={(conversation) => [
+                ...(conversation.linkedContactId
+                  ? [{ href: `/${locale}/contacts/${conversation.linkedContactId}`, label: "Open contact" }]
+                  : []),
+              ]}
+            />
           </SectionCard>
         ) : null}
       </div>
