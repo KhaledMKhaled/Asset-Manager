@@ -15,6 +15,7 @@ import {
 } from "@workspace/api-client-react";
 import { ActivityComposer } from "@/components/crm/activity-composer";
 import { SectionCard } from "@/components/crm/blocks";
+import { NotesWorkspace } from "@/components/crm/notes-workspace";
 import { EmptyPanel, FeedCard, ProfileTabBar } from "@/components/crm/profile-tabs";
 import { ProfileTimelineBrowser } from "@/components/crm/profile-timeline";
 import { AppShell } from "@/components/layout/AppShell";
@@ -288,24 +289,13 @@ export default function CompanyDetailPage({
 
         {activeTab === "notes" ? (
           <SectionCard description="Internal notes and context for the company record." title="Notes">
-            <div className="space-y-3">
-              {notes?.length ? (
-                notes.map((note) => (
-                  <FeedCard
-                    key={note.id}
-                    eyebrow={note.isPinned ? "Pinned note" : note.noteType}
-                    title={formatLabel(note.noteType)}
-                    description={note.noteBody}
-                    meta={formatDateTime(note.updatedAt)}
-                  />
-                ))
-              ) : (
-                <EmptyPanel
-                  body="Notes will show here as the team adds account intelligence."
-                  title="No notes yet"
-                />
-              )}
-            </div>
+            <NotesWorkspace
+              emptyBody="Notes will show here as the team adds account intelligence."
+              entityId={id}
+              entityLabel="company"
+              entityType="company"
+              notes={notes}
+            />
           </SectionCard>
         ) : null}
 

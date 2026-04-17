@@ -20,6 +20,7 @@ import {
 } from "@workspace/api-client-react";
 import { SectionCard } from "@/components/crm/blocks";
 import { ActivityComposer } from "@/components/crm/activity-composer";
+import { NotesWorkspace } from "@/components/crm/notes-workspace";
 import { ScoreBadge, StatusBadge } from "@/components/crm/badges";
 import { EmptyPanel, FeedCard, ProfileTabBar } from "@/components/crm/profile-tabs";
 import { ProfileTimelineBrowser } from "@/components/crm/profile-timeline";
@@ -332,24 +333,13 @@ export default function LeadDetailPage({
 
         {activeTab === "notes" ? (
           <SectionCard description="Internal context, observations, and pinned guidance." title="Notes">
-            <div className="space-y-3">
-              {notes?.length ? (
-                notes.map((note) => (
-                  <FeedCard
-                    key={note.id}
-                    eyebrow={note.isPinned ? "Pinned note" : note.noteType}
-                    title={formatLabel(note.noteType)}
-                    description={note.noteBody}
-                    meta={formatDateTime(note.updatedAt)}
-                  />
-                ))
-              ) : (
-                <EmptyPanel
-                  body="Notes will appear here as soon as they are created or synced to this lead."
-                  title="No notes yet"
-                />
-              )}
-            </div>
+            <NotesWorkspace
+              emptyBody="Notes will appear here as soon as they are created or synced to this lead."
+              entityId={id}
+              entityLabel="lead"
+              entityType="lead"
+              notes={notes}
+            />
           </SectionCard>
         ) : null}
 

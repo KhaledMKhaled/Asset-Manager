@@ -14,6 +14,7 @@ import {
 } from "@workspace/api-client-react";
 import { ActivityComposer } from "@/components/crm/activity-composer";
 import { SectionCard } from "@/components/crm/blocks";
+import { NotesWorkspace } from "@/components/crm/notes-workspace";
 import { EmptyPanel, FeedCard, ProfileTabBar } from "@/components/crm/profile-tabs";
 import { ProfileTimelineBrowser } from "@/components/crm/profile-timeline";
 import { AppShell } from "@/components/layout/AppShell";
@@ -318,24 +319,13 @@ export default function ContactDetailPage({
 
         {activeTab === "notes" ? (
           <SectionCard description="Internal notes associated with this contact." title="Notes">
-            <div className="space-y-3">
-              {notes?.length ? (
-                notes.map((note) => (
-                  <FeedCard
-                    key={note.id}
-                    eyebrow={note.isPinned ? "Pinned note" : note.noteType}
-                    title={formatLabel(note.noteType)}
-                    description={note.noteBody}
-                    meta={formatDateTime(note.updatedAt)}
-                  />
-                ))
-              ) : (
-                <EmptyPanel
-                  body="Notes will appear here once the team starts documenting context on this contact."
-                  title="No notes yet"
-                />
-              )}
-            </div>
+            <NotesWorkspace
+              emptyBody="Notes will appear here once the team starts documenting context on this contact."
+              entityId={id}
+              entityLabel="contact"
+              entityType="contact"
+              notes={notes}
+            />
           </SectionCard>
         ) : null}
 
