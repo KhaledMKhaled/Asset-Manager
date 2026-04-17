@@ -156,6 +156,10 @@ overrides:
 importers:
 
   .:
+    dependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.3.5
     devDependencies:
       prettier:
         specifier: ^3.8.1
