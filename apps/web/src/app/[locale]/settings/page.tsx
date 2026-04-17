@@ -30,6 +30,7 @@ import {
 } from "@workspace/api-client-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { SectionCard, StatCard } from "@/components/crm/blocks";
+import { ScoringAdmin } from "@/components/crm/scoring-admin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -194,6 +195,8 @@ export default function SettingsPage() {
           </div>
         </SectionCard>
       </div>
+
+      <ScoringAdmin />
     </AppShell>
   );
 }
