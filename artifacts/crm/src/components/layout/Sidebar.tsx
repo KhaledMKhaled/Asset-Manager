@@ -3,8 +3,9 @@ import { Link, useLocation } from "wouter";
 import {
   LayoutDashboard, Users, Building2, Phone, TrendingUp,
   Target, MessageSquare, CheckSquare, Bell, Megaphone,
-  GitBranch, Settings, Star, BarChart3, ChevronLeft,
-  ChevronRight, LogOut, User,
+  GitBranch, Settings, BarChart3, ChevronLeft,
+  ChevronRight, LogOut, User, Bot, DollarSign, Zap,
+  ChevronDown, ChevronUp,
 } from "lucide-react";
 import { useAuth, logout } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
@@ -20,7 +21,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useListNotifications } from "@workspace/api-client-react";
 
-const navItems = [
+const mainNavItems = [
   { label: "Dashboard", labelAr: "لوحة القيادة", href: "/dashboard", icon: LayoutDashboard },
   { label: "Leads", labelAr: "العملاء المحتملون", href: "/leads", icon: Users },
   { label: "Contacts", labelAr: "جهات الاتصال", href: "/contacts", icon: Phone },
@@ -31,7 +32,15 @@ const navItems = [
   { label: "Inbox", labelAr: "البريد الوارد", href: "/inbox", icon: MessageSquare },
   { label: "Campaigns", labelAr: "الحملات", href: "/campaigns", icon: Megaphone },
   { label: "Workflows", labelAr: "سير العمل", href: "/workflows", icon: GitBranch },
-  { label: "Settings", labelAr: "الإعدادات", href: "/settings", icon: Settings },
+];
+
+const dashboardSubItems = [
+  { label: "Executive", labelAr: "تنفيذي", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Media Buying", labelAr: "شراء الإعلانات", href: "/dashboard/media", icon: DollarSign },
+  { label: "Sales", labelAr: "المبيعات", href: "/dashboard/sales", icon: TrendingUp },
+  { label: "Smarketing", labelAr: "سماركتنج", href: "/dashboard/smarketing", icon: BarChart3 },
+  { label: "Messaging", labelAr: "الرسائل", href: "/dashboard/messaging", icon: MessageSquare },
+  { label: "AI Continuity", labelAr: "استمرارية الذكاء", href: "/dashboard/ai-continuity", icon: Bot },
 ];
 
 interface SidebarProps {
@@ -40,6 +49,7 @@ interface SidebarProps {
 
 export function Sidebar({ lang }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const [dashExpanded, setDashExpanded] = useState(false);
   const [location] = useLocation();
   const { user } = useAuth();
   const { data: notifications } = useListNotifications({ isRead: false });
@@ -49,6 +59,8 @@ export function Sidebar({ lang }: SidebarProps) {
     logout();
     window.location.href = "/login";
   }
+
+  const isDashboardActive = location.startsWith("/dashboard");
 
   return (
     <aside
@@ -76,7 +88,53 @@ export function Sidebar({ lang }: SidebarProps) {
       </div>
 
       <nav className="flex-1 py-4 overflow-y-auto">
-        {navItems.map((item) => {
+        {/* Dashboard with sub-nav */}
+        <div>
+          <button
+            onClick={() => !collapsed && setDashExpanded(!dashExpanded)}
+            className={cn(
+              "flex items-center gap-3 mx-2 px-3 py-2 rounded-lg mb-0.5 text-sm transition-colors w-[calc(100%-16px)]",
+              isDashboardActive
+                ? "bg-[hsl(var(--sidebar-primary))] text-[hsl(var(--sidebar-primary-foreground))]"
+                : "text-[hsl(var(--sidebar-foreground))] hover:bg-[hsl(var(--sidebar-accent))] hover:text-[hsl(var(--sidebar-accent-foreground))]"
+            )}
+          >
+            <LayoutDashboard className="h-4 w-4 shrink-0" />
+            {!collapsed && (
+              <>
+                <span className="flex-1 text-left">{lang === "ar" ? "لوحات القيادة" : "Dashboards"}</span>
+                {dashExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+              </>
+            )}
+          </button>
+          {!collapsed && dashExpanded && (
+            <div className="ml-4 mt-0.5 space-y-0.5">
+              {dashboardSubItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = location === item.href;
+                const label = lang === "ar" ? item.labelAr : item.label;
+                return (
+                  <Link key={item.href} href={item.href}>
+                    <a
+                      className={cn(
+                        "flex items-center gap-2 mx-2 px-3 py-1.5 rounded-md text-xs transition-colors",
+                        isActive
+                          ? "bg-[hsl(var(--sidebar-accent))] text-[hsl(var(--sidebar-accent-foreground))]"
+                          : "text-[hsl(var(--sidebar-foreground))]/70 hover:bg-[hsl(var(--sidebar-accent))]/50 hover:text-[hsl(var(--sidebar-accent-foreground))]"
+                      )}
+                    >
+                      <Icon className="h-3 w-3" />
+                      <span>{label}</span>
+                    </a>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Main navigation (excluding Dashboard since it's handled above) */}
+        {mainNavItems.filter(item => item.href !== "/dashboard").map((item) => {
           const Icon = item.icon;
           const isActive = location === item.href || (item.href !== "/dashboard" && location.startsWith(item.href));
           const label = lang === "ar" ? item.labelAr : item.label;
@@ -104,6 +162,22 @@ export function Sidebar({ lang }: SidebarProps) {
             </Link>
           );
         })}
+
+        {/* Settings */}
+        <Link href="/settings">
+          <a
+            data-testid="nav-settings"
+            className={cn(
+              "flex items-center gap-3 mx-2 px-3 py-2 rounded-lg mb-0.5 text-sm transition-colors",
+              location.startsWith("/settings")
+                ? "bg-[hsl(var(--sidebar-primary))] text-[hsl(var(--sidebar-primary-foreground))]"
+                : "text-[hsl(var(--sidebar-foreground))] hover:bg-[hsl(var(--sidebar-accent))] hover:text-[hsl(var(--sidebar-accent-foreground))]"
+            )}
+          >
+            <Settings className="h-4 w-4 shrink-0" />
+            {!collapsed && <span>{lang === "ar" ? "الإعدادات" : "Settings"}</span>}
+          </a>
+        </Link>
       </nav>
 
       <div className="border-t border-[hsl(var(--sidebar-border))] p-3">

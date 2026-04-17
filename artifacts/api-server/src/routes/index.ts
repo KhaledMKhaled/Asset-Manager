@@ -22,6 +22,14 @@ import integrationsRouter from "./integrations";
 import dashboardRouter from "./dashboard";
 import settingsRouter from "./settings";
 
+// New routes added per implementation plan v5
+import channelAccountsRouter from "./channel-accounts";
+import customFieldsRouter from "./custom-fields";
+import auditLogsRouter from "./audit-logs";
+import botPersonasRouter from "./bot-personas";
+import botFlowsRouter from "./bot-flows";
+import agentAvailabilityRouter from "./agent-availability";
+
 const router: IRouter = Router();
 
 router.use(healthRouter);
@@ -46,5 +54,13 @@ router.use(templatesRouter);
 router.use(integrationsRouter);
 router.use(dashboardRouter);
 router.use(settingsRouter);
+
+// New routes
+router.use(channelAccountsRouter);
+router.use(customFieldsRouter);
+router.use(auditLogsRouter);
+router.use(botPersonasRouter);
+router.use(botFlowsRouter);
+router.use(agentAvailabilityRouter);
 
 export default router;

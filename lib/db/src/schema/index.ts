@@ -18,3 +18,20 @@ export * from "./conversations";
 export * from "./templates";
 export * from "./integrations";
 export * from "./settings";
+
+// New tables added per implementation plan v5
+export * from "./subscriptions";
+export * from "./ad_sets";
+export * from "./meta_ad_data";
+export * from "./custom_fields";
+export * from "./audit_logs";
+export * from "./ai_analysis_logs";
+export * from "./lead_stage_history";
+export * from "./lead_score_history";
+export * from "./reminders";
+export * from "./workflow_execution_logs";
+export * from "./channel_accounts";
+export * from "./agent_availability";
+export * from "./bot_personas";
+export * from "./bot_flows";
+export * from "./ai_conversation_sessions";

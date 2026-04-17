@@ -1,10 +1,10 @@
-import { Link, useLocation } from "wouter";
+import { Link } from "wouter";
 import { AppShell } from "@/components/layout/AppShell";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Users, BarChart3, Target, Star, Settings2, GitBranch, Phone,
+  Plug, MessageSquare, Route, Bell, Shield, Type, Bot,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const sections = [
   { title: "Users & Roles", desc: "Manage team members, roles, and permissions", icon: Users, href: "/settings/users" },
@@ -12,16 +12,22 @@ const sections = [
   { title: "Pipelines", desc: "Setup sales pipelines and stages", icon: GitBranch, href: "/settings/pipelines" },
   { title: "KPI Definitions", desc: "Define and track key performance indicators", icon: BarChart3, href: "/settings/kpis" },
   { title: "Lead Scoring", desc: "Configure AI and rule-based scoring models", icon: Star, href: "/settings/scoring" },
+  { title: "Workflows", desc: "Create and manage automation workflows", icon: Settings2, href: "/settings/workflows" },
+  { title: "Custom Fields", desc: "Add dynamic fields to any CRM entity", icon: Type, href: "/settings/fields" },
+  { title: "Integrations", desc: "Connect Meta, OpenAI, Gemini and more", icon: Plug, href: "/settings/integrations" },
   { title: "Channels", desc: "Connect WhatsApp, Messenger, and Instagram", icon: Phone, href: "/settings/channels" },
-  { title: "General", desc: "System-wide configuration and preferences", icon: Settings2, href: "/settings/general" },
+  { title: "Message Templates", desc: "Create and manage message templates", icon: MessageSquare, href: "/settings/templates" },
+  { title: "Routing Rules", desc: "Configure conversation routing policies", icon: Route, href: "/settings/routing" },
+  { title: "Notifications", desc: "Setup notification events and reminders", icon: Bell, href: "/settings/notifications" },
+  { title: "Audit Log", desc: "View all system activity and changes", icon: Shield, href: "/settings/audit" },
 ];
 
 export default function SettingsPage() {
   return (
     <AppShell title="Settings">
-      <div className="max-w-2xl space-y-4">
-        <p className="text-sm text-muted-foreground">Configure your CRM, pipelines, scoring models, KPIs, and integrations.</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="max-w-3xl space-y-4">
+        <p className="text-sm text-muted-foreground">Configure your CRM, pipelines, scoring models, KPIs, integrations, and messaging channels.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {sections.map((s) => {
             const Icon = s.icon;
             return (

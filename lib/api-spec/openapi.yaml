@@ -31,6 +31,12 @@ tags:
   - name: integrations
   - name: dashboard
   - name: settings
+  - name: channel-accounts
+  - name: custom-fields
+  - name: audit-logs
+  - name: bot-personas
+  - name: bot-flows
+  - name: agent-availability
 
 paths:
   /healthz:
@@ -2294,6 +2300,432 @@ paths:
               schema:
                 $ref: "#/components/schemas/Setting"
 
+  # ═══════════════════════════════════
+  # CHANNEL ACCOUNTS
+  # ═══════════════════════════════════
+  /channel-accounts:
+    get:
+      operationId: listChannelAccounts
+      tags: [channel-accounts]
+      summary: List channel accounts
+      responses:
+        "200":
+          description: Channel accounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChannelAccount"
+    post:
+      operationId: createChannelAccount
+      tags: [channel-accounts]
+      summary: Create channel account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateChannelAccountBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChannelAccount"
+
+  /channel-accounts/{id}:
+    patch:
+      operationId: updateChannelAccount
+      tags: [channel-accounts]
+      summary: Update channel account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateChannelAccountBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChannelAccount"
+    delete:
+      operationId: deleteChannelAccount
+      tags: [channel-accounts]
+      summary: Delete channel account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
+  # ═══════════════════════════════════
+  # CUSTOM FIELDS
+  # ═══════════════════════════════════
+  /custom-fields:
+    get:
+      operationId: listCustomFields
+      tags: [custom-fields]
+      summary: List custom field definitions
+      parameters:
+        - name: entityType
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Custom fields
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CustomFieldDefinition"
+    post:
+      operationId: createCustomField
+      tags: [custom-fields]
+      summary: Create custom field definition
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCustomFieldBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomFieldDefinition"
+
+  /custom-fields/{id}:
+    patch:
+      operationId: updateCustomField
+      tags: [custom-fields]
+      summary: Update custom field definition
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCustomFieldBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomFieldDefinition"
+    delete:
+      operationId: deleteCustomField
+      tags: [custom-fields]
+      summary: Delete custom field
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
+  # ═══════════════════════════════════
+  # AUDIT LOGS
+  # ═══════════════════════════════════
+  /audit-logs:
+    get:
+      operationId: listAuditLogs
+      tags: [audit-logs]
+      summary: List audit logs
+      parameters:
+        - name: entityType
+          in: query
+          schema:
+            type: string
+        - name: userId
+          in: query
+          schema:
+            type: string
+        - name: action
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Audit logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AuditLog"
+
+  # ═══════════════════════════════════
+  # BOT PERSONAS
+  # ═══════════════════════════════════
+  /bot-personas:
+    get:
+      operationId: listBotPersonas
+      tags: [bot-personas]
+      summary: List bot personas
+      responses:
+        "200":
+          description: Bot personas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BotPersona"
+    post:
+      operationId: createBotPersona
+      tags: [bot-personas]
+      summary: Create bot persona
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBotPersonaBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BotPersona"
+
+  /bot-personas/{id}:
+    get:
+      operationId: getBotPersona
+      tags: [bot-personas]
+      summary: Get bot persona
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Bot persona
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BotPersona"
+    patch:
+      operationId: updateBotPersona
+      tags: [bot-personas]
+      summary: Update bot persona
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBotPersonaBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BotPersona"
+    delete:
+      operationId: deleteBotPersona
+      tags: [bot-personas]
+      summary: Delete bot persona
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
+  # ═══════════════════════════════════
+  # BOT FLOWS
+  # ═══════════════════════════════════
+  /bot-flows:
+    get:
+      operationId: listBotFlows
+      tags: [bot-flows]
+      summary: List bot flows
+      responses:
+        "200":
+          description: Bot flows
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BotFlow"
+    post:
+      operationId: createBotFlow
+      tags: [bot-flows]
+      summary: Create bot flow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBotFlowBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BotFlow"
+
+  /bot-flows/{id}:
+    get:
+      operationId: getBotFlow
+      tags: [bot-flows]
+      summary: Get bot flow with steps
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Bot flow detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BotFlowDetail"
+    patch:
+      operationId: updateBotFlow
+      tags: [bot-flows]
+      summary: Update bot flow
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBotFlowBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BotFlow"
+    delete:
+      operationId: deleteBotFlow
+      tags: [bot-flows]
+      summary: Delete bot flow
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
+  # ═══════════════════════════════════
+  # AGENT AVAILABILITY
+  # ═══════════════════════════════════
+  /agent-availability:
+    get:
+      operationId: listAgentAvailability
+      tags: [agent-availability]
+      summary: List all agent availability statuses
+      responses:
+        "200":
+          description: Agent availability list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AgentAvailability"
+
+  /agent-availability/{userId}:
+    get:
+      operationId: getAgentAvailability
+      tags: [agent-availability]
+      summary: Get agent availability
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Agent availability
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentAvailability"
+    put:
+      operationId: upsertAgentAvailability
+      tags: [agent-availability]
+      summary: Create or update agent availability
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertAgentAvailabilityBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentAvailability"
+
 components:
   schemas:
     HealthStatus:
@@ -4366,3 +4798,341 @@ components:
         value:
           type: string
       required: [value]
+
+    # ─── CHANNEL ACCOUNTS ────────────────
+    ChannelAccount:
+      type: object
+      properties:
+        id:
+          type: string
+        channelType:
+          type: string
+        externalAccountId:
+          type: ["string", "null"]
+        displayName:
+          type: ["string", "null"]
+        status:
+          type: string
+        integrationId:
+          type: ["string", "null"]
+        defaultTeamId:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required: [id, channelType, status, createdAt, updatedAt]
+
+    CreateChannelAccountBody:
+      type: object
+      properties:
+        channelType:
+          type: string
+        externalAccountId:
+          type: string
+        displayName:
+          type: string
+        integrationId:
+          type: string
+        defaultTeamId:
+          type: string
+      required: [channelType]
+
+    UpdateChannelAccountBody:
+      type: object
+      properties:
+        displayName:
+          type: string
+        status:
+          type: string
+        defaultTeamId:
+          type: string
+
+    # ─── CUSTOM FIELDS ───────────────────
+    CustomFieldDefinition:
+      type: object
+      properties:
+        id:
+          type: string
+        entityType:
+          type: string
+        fieldName:
+          type: string
+        fieldLabelEn:
+          type: ["string", "null"]
+        fieldLabelAr:
+          type: ["string", "null"]
+        fieldType:
+          type: string
+        isRequired:
+          type: boolean
+        isActive:
+          type: boolean
+        position:
+          type: integer
+        fieldGroup:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required: [id, entityType, fieldName, fieldType, isRequired, isActive, position, createdAt, updatedAt]
+
+    CreateCustomFieldBody:
+      type: object
+      properties:
+        entityType:
+          type: string
+        fieldName:
+          type: string
+        fieldLabelEn:
+          type: string
+        fieldLabelAr:
+          type: string
+        fieldType:
+          type: string
+        isRequired:
+          type: boolean
+        fieldGroup:
+          type: string
+      required: [entityType, fieldName, fieldType]
+
+    UpdateCustomFieldBody:
+      type: object
+      properties:
+        fieldLabelEn:
+          type: string
+        fieldLabelAr:
+          type: string
+        isRequired:
+          type: boolean
+        isActive:
+          type: boolean
+        position:
+          type: integer
+
+    # ─── AUDIT LOGS ──────────────────────
+    AuditLog:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: ["string", "null"]
+        entityType:
+          type: ["string", "null"]
+        entityId:
+          type: ["string", "null"]
+        action:
+          type: string
+        oldValues:
+          type: ["object", "null"]
+        newValues:
+          type: ["object", "null"]
+        ipAddress:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required: [id, action, createdAt]
+
+    # ─── BOT PERSONAS ────────────────────
+    BotPersona:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        nameAr:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        botDisplayName:
+          type: ["string", "null"]
+        botRole:
+          type: ["string", "null"]
+        tone:
+          type: string
+        primaryLanguage:
+          type: string
+        isActive:
+          type: boolean
+        isDefault:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required: [id, name, tone, primaryLanguage, isActive, isDefault, createdAt, updatedAt]
+
+    CreateBotPersonaBody:
+      type: object
+      properties:
+        name:
+          type: string
+        nameAr:
+          type: string
+        description:
+          type: string
+        botDisplayName:
+          type: string
+        botRole:
+          type: string
+        tone:
+          type: string
+        primaryLanguage:
+          type: string
+      required: [name]
+
+    UpdateBotPersonaBody:
+      type: object
+      properties:
+        name:
+          type: string
+        nameAr:
+          type: string
+        description:
+          type: string
+        botDisplayName:
+          type: string
+        tone:
+          type: string
+        isActive:
+          type: boolean
+
+    # ─── BOT FLOWS ───────────────────────
+    BotFlow:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        nameAr:
+          type: ["string", "null"]
+        flowType:
+          type: string
+        triggerType:
+          type: string
+        personaId:
+          type: ["string", "null"]
+        isActive:
+          type: boolean
+        maxMessages:
+          type: integer
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required: [id, name, flowType, triggerType, isActive, createdAt, updatedAt]
+
+    BotFlowDetail:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        nameAr:
+          type: ["string", "null"]
+        flowType:
+          type: string
+        triggerType:
+          type: string
+        personaId:
+          type: ["string", "null"]
+        isActive:
+          type: boolean
+        maxMessages:
+          type: integer
+        steps:
+          type: array
+          items:
+            $ref: "#/components/schemas/BotFlowStep"
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required: [id, name, flowType, triggerType, isActive, steps, createdAt, updatedAt]
+
+    BotFlowStep:
+      type: object
+      properties:
+        id:
+          type: string
+        flowId:
+          type: string
+        stepType:
+          type: string
+        position:
+          type: integer
+        templateId:
+          type: ["string", "null"]
+        aiPromptTemplate:
+          type: ["string", "null"]
+        waitMinutes:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+      required: [id, flowId, stepType, position, createdAt]
+
+    CreateBotFlowBody:
+      type: object
+      properties:
+        name:
+          type: string
+        nameAr:
+          type: string
+        flowType:
+          type: string
+        triggerType:
+          type: string
+        personaId:
+          type: string
+      required: [name, flowType, triggerType]
+
+    UpdateBotFlowBody:
+      type: object
+      properties:
+        name:
+          type: string
+        nameAr:
+          type: string
+        isActive:
+          type: boolean
+        maxMessages:
+          type: integer
+
+    # ─── AGENT AVAILABILITY ──────────────
+    AgentAvailability:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        status:
+          type: string
+        activeConversationCount:
+          type: integer
+        maxConcurrentConversations:
+          type: integer
+        lastActivityAt:
+          type: string
+        statusChangedAt:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required: [id, userId, status, activeConversationCount, maxConcurrentConversations, createdAt, updatedAt]
+
+    UpsertAgentAvailabilityBody:
+      type: object
+      properties:
+        status:
+          type: string
+        activeConversationCount:
+          type: integer
+        maxConcurrentConversations:
+          type: integer
