@@ -1,57 +1,94 @@
-import { getTranslations } from 'next-intl/server';
-import { signIn } from '@/auth';
+"use client";
 
-export default async function LoginPage() {
-  const t = await getTranslations('Auth');
+import { useState } from "react";
+import { useLogin } from "@workspace/api-client-react";
+import { useRouter } from "@/i18n/routing";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
-  // Next.js Server Action
-  async function handleLogin(formData: FormData) {
-    'use server';
-    await signIn('credentials', formData);
+export default function LoginPage() {
+  const router = useRouter();
+  const login = useLogin();
+  const [email, setEmail] = useState("admin@smarketing.com");
+  const [password, setPassword] = useState("admin123");
+  const [error, setError] = useState("");
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+
+    try {
+      await login.mutateAsync({ data: { email, password } });
+      router.push("/dashboard");
+      router.refresh();
+    } catch (err: any) {
+      setError(err?.data?.error ?? err?.message ?? "Login failed.");
+    }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-4">
-      <div className="w-full max-w-sm glass p-8 rounded-3xl shadow-xl shadow-brand-500/10 border border-slate-200 dark:border-slate-800">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-brand-500 to-purple-600">
-            Smarketing
+    <div className="flex min-h-screen items-center justify-center p-4 md:p-8">
+      <div className="grid w-full max-w-5xl overflow-hidden rounded-[2rem] panel lg:grid-cols-[1.15fr_0.85fr]">
+        <div className="bg-slate-900 px-8 py-10 text-slate-50">
+          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-cyan-300">
+            Smarketing CRM
+          </p>
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight">
+            Revenue CRM plus bilingual operating system.
           </h1>
-          <p className="text-sm font-medium text-slate-500 mt-2">{t('login')}</p>
+          <p className="mt-4 max-w-xl text-sm leading-7 text-slate-300">
+            The live app now aligns with the implementation plan around dashboard visibility,
+            CRM entities, pipeline execution, omnichannel inbox, workflows, and AI continuity.
+          </p>
+          <div className="mt-10 grid gap-4 sm:grid-cols-2">
+            {[
+              "Dynamic funnel and pipeline orchestration",
+              "Omnichannel WhatsApp, Messenger, and Instagram inbox",
+              "AI continuity, bot personas, and handoff visibility",
+              "Configurable KPIs, settings, workflows, and scoring",
+            ].map((item) => (
+              <div key={item} className="rounded-[1.5rem] border border-white/10 bg-white/5 px-4 py-4 text-sm">
+                {item}
+              </div>
+            ))}
+          </div>
         </div>
-        
-        <form action={handleLogin} className="space-y-4">
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-              {t('email')}
-            </label>
-            <input 
-              type="email" 
-              name="email"
-              required 
-              className="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all dark:text-white" 
-            />
+
+        <div className="px-6 py-10 sm:px-10">
+          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-brand-700">
+            Sign in
+          </p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight">
+            Continue to the workspace
+          </h2>
+          <p className="mt-2 text-sm text-muted">
+            Demo credentials are prefilled so we can verify the end-to-end flow quickly.
+          </p>
+
+          <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
+            <div>
+              <label className="mb-2 block text-sm font-medium">Email</label>
+              <Input value={email} onChange={(event) => setEmail(event.target.value)} />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-medium">Password</label>
+              <Input type="password" value={password} onChange={(event) => setPassword(event.target.value)} />
+            </div>
+            {error ? (
+              <div className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                {error}
+              </div>
+            ) : null}
+            <Button className="h-11 w-full rounded-full" disabled={login.isPending} type="submit">
+              {login.isPending ? "Signing in..." : "Enter workspace"}
+            </Button>
+          </form>
+
+          <div className="mt-6 rounded-[1.5rem] bg-cyan-50 px-4 py-4 text-sm text-cyan-900">
+            <p className="font-semibold">Demo access</p>
+            <p className="mt-1">`admin@smarketing.com` / `admin123`</p>
           </div>
-          
-           <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-              {t('password')}
-            </label>
-            <input 
-              type="password" 
-              name="password"
-              required 
-              className="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all dark:text-white" 
-            />
-          </div>
-          
-          <button 
-            type="submit" 
-            className="w-full mt-6 px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-lg shadow-lg shadow-brand-500/30 transition-all font-sans"
-          >
-            {t('submit')}
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   );

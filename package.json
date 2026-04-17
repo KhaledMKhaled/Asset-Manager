@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "node ./scripts/dev.mjs",
-    "dev:api": "pnpm --filter @workspace/api-server run start",
+    "dev:api": "pnpm --filter @workspace/api-server run build && pnpm --filter @workspace/api-server run start",
     "dev:web": "pnpm --filter web run dev",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "typecheck:libs": "tsc --build",
