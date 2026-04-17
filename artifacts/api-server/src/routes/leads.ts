@@ -114,10 +114,23 @@ router.get("/leads", requireAuth, async (req, res): Promise<void> => {
 
 router.post("/leads", requireAuth, async (req: AuthRequest, res): Promise<void> => {
   try {
+    const duplicateConditions: SQL[] = [];
+    if (req.body.primaryContactId) {
+      duplicateConditions.push(eq(leadsTable.primaryContactId, req.body.primaryContactId as string));
+    }
+    if (req.body.companyId) {
+      duplicateConditions.push(eq(leadsTable.companyId, req.body.companyId as string));
+    }
+
+    const potentialDuplicates = duplicateConditions.length
+      ? await db.select({ id: leadsTable.id }).from(leadsTable).where(and(...duplicateConditions)).limit(1)
+      : [];
+
     const [lead] = await db.insert(leadsTable).values({
       ...req.body,
       leadCode: genLeadCode(),
       assignedTo: req.body.assignedTo ?? req.user!.userId,
+      duplicateFlag: potentialDuplicates.length > 0,
     }).returning();
     await db.insert(timelineEventsTable).values({
       entityType: "lead",

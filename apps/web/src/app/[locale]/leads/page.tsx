@@ -32,7 +32,12 @@ export default function LeadsPage() {
       <SectionCard description="Search, inspect, and act on leads flowing from the funnel into sales follow-up." title="Lead registry">
         <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <Input className="max-w-sm rounded-full" onChange={(event) => setSearch(event.target.value)} placeholder="Search by company" value={search} />
-          <p className="text-sm text-muted">{data?.total ?? 0} leads</p>
+          <div className="flex items-center gap-3">
+            <p className="text-sm text-muted">{data?.total ?? 0} leads</p>
+            <Link href="/leads/new">
+              <Button>Create lead</Button>
+            </Link>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
