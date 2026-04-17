@@ -12,6 +12,7 @@ import {
   useListNotes,
   useUpdateContact,
 } from "@workspace/api-client-react";
+import { ActivityComposer } from "@/components/crm/activity-composer";
 import { SectionCard } from "@/components/crm/blocks";
 import { EmptyPanel, FeedCard, ProfileTabBar } from "@/components/crm/profile-tabs";
 import { ProfileTimelineBrowser } from "@/components/crm/profile-timeline";
@@ -294,6 +295,7 @@ export default function ContactDetailPage({
         {activeTab === "activities" ? (
           <SectionCard description="Structured actions recorded against this contact." title="Activities">
             <div className="space-y-3">
+              <ActivityComposer entityId={id} entityLabel="contact" entityType="contact" />
               {activities?.length ? (
                 activities.map((activity) => (
                   <FeedCard
@@ -306,7 +308,7 @@ export default function ContactDetailPage({
                 ))
               ) : (
                 <EmptyPanel
-                  body="This contact does not have any logged activity records yet."
+                  body="This contact does not have any logged activity records yet. Use the composer above to add one."
                   title="No activities yet"
                 />
               )}

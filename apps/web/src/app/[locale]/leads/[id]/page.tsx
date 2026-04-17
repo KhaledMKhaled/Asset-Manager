@@ -19,6 +19,7 @@ import {
   useUpdateLead,
 } from "@workspace/api-client-react";
 import { SectionCard } from "@/components/crm/blocks";
+import { ActivityComposer } from "@/components/crm/activity-composer";
 import { ScoreBadge, StatusBadge } from "@/components/crm/badges";
 import { EmptyPanel, FeedCard, ProfileTabBar } from "@/components/crm/profile-tabs";
 import { ProfileTimelineBrowser } from "@/components/crm/profile-timeline";
@@ -308,6 +309,7 @@ export default function LeadDetailPage({
         {activeTab === "activities" ? (
           <SectionCard description="Logged outreach, follow-up, and structured actions." title="Activities">
             <div className="space-y-3">
+              <ActivityComposer entityId={id} entityLabel="lead" entityType="lead" />
               {activities?.length ? (
                 activities.map((activity) => (
                   <FeedCard
@@ -320,7 +322,7 @@ export default function LeadDetailPage({
                 ))
               ) : (
                 <EmptyPanel
-                  body="Structured activity logging lands in the next Scope 3 tasks. This tab is now ready to display those records."
+                  body="No activities are logged yet for this lead. Use the composer above to add the first one."
                   title="No activities yet"
                 />
               )}
