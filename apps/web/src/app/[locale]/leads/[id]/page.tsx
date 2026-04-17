@@ -21,6 +21,7 @@ import {
 import { SectionCard } from "@/components/crm/blocks";
 import { ScoreBadge, StatusBadge } from "@/components/crm/badges";
 import { EmptyPanel, FeedCard, ProfileTabBar } from "@/components/crm/profile-tabs";
+import { ProfileTimelineBrowser } from "@/components/crm/profile-timeline";
 import { AppShell } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -63,6 +64,21 @@ export default function LeadDetailPage({
       ),
     [conversations, id, lead?.primaryContactId],
   );
+  const timelineItems = useMemo(
+    () =>
+      (timeline ?? []).map((item) => ({
+        id: item.id,
+        category: item.sourceSystem ?? item.eventType,
+        eyebrow: item.sourceSystem ?? item.eventType,
+        title: item.renderedTitle ?? formatLabel(item.eventType),
+        description: item.renderedDescription,
+        timestamp: item.eventTimestamp,
+        searchText: [item.eventType, item.sourceSystem, item.renderedTitle, item.renderedDescription]
+          .filter(Boolean)
+          .join(" "),
+      })),
+    [timeline],
+  );
 
   async function handleScore() {
     await scoreLead.mutateAsync({ id });
@@ -95,7 +111,7 @@ export default function LeadDetailPage({
 
   const tabs = [
     { id: "overview", label: "Overview" },
-    { id: "timeline", label: "Timeline", count: timeline?.length ?? 0 },
+    { id: "timeline", label: "Timeline", count: timelineItems.length },
     { id: "activities", label: "Activities", count: activities?.length ?? 0 },
     { id: "notes", label: "Notes", count: notes?.length ?? 0 },
     { id: "messaging", label: "Messaging", count: linkedConversations.length },
@@ -280,24 +296,12 @@ export default function LeadDetailPage({
 
         {activeTab === "timeline" ? (
           <SectionCard description="Chronological event stream for the lead lifecycle." title="Timeline">
-            <div className="space-y-3">
-              {timeline?.length ? (
-                timeline.map((item) => (
-                  <FeedCard
-                    key={item.id}
-                    eyebrow={item.sourceSystem ?? item.eventType}
-                    title={item.renderedTitle ?? item.eventType}
-                    description={item.renderedDescription}
-                    meta={formatDateTime(item.eventTimestamp)}
-                  />
-                ))
-              ) : (
-                <EmptyPanel
-                  body="No timeline events are available yet for this lead."
-                  title="Timeline is empty"
-                />
-              )}
-            </div>
+            <ProfileTimelineBrowser
+              emptyBody="No timeline events are available yet for this lead."
+              emptyTitle="Timeline is empty"
+              items={timelineItems}
+              noResultsBody="No lead timeline events match the current search or source filter."
+            />
           </SectionCard>
         ) : null}
 

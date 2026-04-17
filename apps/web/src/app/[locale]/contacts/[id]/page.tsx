@@ -14,6 +14,7 @@ import {
 } from "@workspace/api-client-react";
 import { SectionCard } from "@/components/crm/blocks";
 import { EmptyPanel, FeedCard, ProfileTabBar } from "@/components/crm/profile-tabs";
+import { ProfileTimelineBrowser } from "@/components/crm/profile-timeline";
 import { AppShell } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -73,17 +74,25 @@ export default function ContactDetailPage({
       [
         ...(activities ?? []).map((activity) => ({
           id: `activity-${activity.id}`,
+          category: "activity",
           eyebrow: activity.activityType,
           title: activity.subject ?? formatLabel(activity.activityType),
           description: activity.aiSummary ?? activity.content ?? activity.outcome,
           timestamp: activity.activityDatetime,
+          searchText: [activity.activityType, activity.subject, activity.content, activity.outcome]
+            .filter(Boolean)
+            .join(" "),
         })),
         ...(notes ?? []).map((note) => ({
           id: `note-${note.id}`,
+          category: "note",
           eyebrow: note.isPinned ? "Pinned note" : note.noteType,
           title: formatLabel(note.noteType),
           description: note.noteBody,
           timestamp: note.updatedAt,
+          searchText: [note.noteType, note.noteBody, note.isPinned ? "pinned" : ""]
+            .filter(Boolean)
+            .join(" "),
         })),
       ].sort((left, right) => Date.parse(right.timestamp) - Date.parse(left.timestamp)),
     [activities, notes],
@@ -273,24 +282,12 @@ export default function ContactDetailPage({
 
         {activeTab === "timeline" ? (
           <SectionCard description="Merged event stream for contact-level work." title="Timeline">
-            <div className="space-y-3">
-              {timelineItems.length ? (
-                timelineItems.map((item) => (
-                  <FeedCard
-                    key={item.id}
-                    eyebrow={item.eyebrow}
-                    title={item.title}
-                    description={item.description}
-                    meta={formatDateTime(item.timestamp)}
-                  />
-                ))
-              ) : (
-                <EmptyPanel
-                  body="Activities and notes will collect here as the contact record gets used."
-                  title="Timeline is empty"
-                />
-              )}
-            </div>
+            <ProfileTimelineBrowser
+              emptyBody="Activities and notes will collect here as the contact record gets used."
+              emptyTitle="Timeline is empty"
+              items={timelineItems}
+              noResultsBody="No contact timeline items match the current search or type filter."
+            />
           </SectionCard>
         ) : null}
 
