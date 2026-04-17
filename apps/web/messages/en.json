@@ -1,0 +1,23 @@
+{
+  "Index": {
+    "title": "Smarketing CRM V5",
+    "subtitle": "The autonomous, bilingual, AI-first operating system for unified sales and marketing.",
+    "dashboard": "Open Dashboard",
+    "configure": "Configure App"
+  },
+  "Auth": {
+    "login": "Login",
+    "email": "Email Address",
+    "password": "Password",
+    "submit": "Sign In",
+    "signing_in": "Signing in..."
+  },
+  "Navigation": {
+    "dashboard": "Dashboard",
+    "contacts": "Leads & Contacts",
+    "pipelines": "Pipelines",
+    "inbox": "Omnichannel Inbox",
+    "automation": "AI Automation",
+    "settings": "Settings"
+  }
+}
